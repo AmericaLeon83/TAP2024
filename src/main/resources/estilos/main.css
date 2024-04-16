@@ -1,0 +1,36 @@
+.root{
+  -fx-background-image: url('https://pm1.aminoapps.com/6531/17c44863efd8e5178d4de3852332e3da3d554e13_hq.jpg'), url('https://www.tecnm.mx/images/tecnm_virtual/tecnm.png');
+  -fx-background-size: 100%, 200px;
+  -fx-background-repeat: no-repeat;
+  -fx-background-position: center, bottom right;
+}
+
+.menu-bar{
+  -fx-background-color: rgb(69, 64, 224);
+  -fx-border-color: while;
+  -fx-border-width: 3px;
+}
+menu{
+  -fx-background-color: black;
+}
+.label{
+  -fx-background-color: while;
+  -fx-padding: 10;
+}
+.menu:hover{
+  -fx-background-color: red;
+}
+.label:hover{
+  -fx-background-color: black;
+  -fx-font-size: 15pt;
+}
+.menu-item{
+  -fx-background-color: #4E9A1B;
+  -fx-border-color: #000;
+}
+.menu-item:hover{
+  -fx-background-color: #000;
+}
+.menu-item label{
+  -fx-text-fill: black;
+}

@@ -1,0 +1,11 @@
+.root{
+    -fx-background-image: url('https://i.pinimg.com/originals/97/6c/c6/976cc62ea47c5d6b26e0e90e648a69f5.jpg'),
+    url('https://celaya.tecnm.mx/wp-content/uploads/2021/02/cropped-FAV.png');
+    -fx-background-size: 100%, 200px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center, bottom right;
+}
+#btnJugar {
+    -fx-background-color: #FF69B4; /* Rosa Morado */
+    -fx-text-fill: black; /* Texto en blanco */
+}

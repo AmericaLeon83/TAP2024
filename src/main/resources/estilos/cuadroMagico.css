@@ -1,0 +1,16 @@
+.root{
+    -fx-background-image: url('https://i.pinimg.com/originals/6c/c1/95/6cc19558a4cf8bd8054d8e43ff510444.jpg'),
+    url('https://celaya.tecnm.mx/wp-content/uploads/2021/02/cropped-FAV.png');
+    -fx-background-size: 100%, 200px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center, bottom right;
+}
+#btnCalcular {
+    -fx-background-color: #4CAF50; /* Verde */
+    -fx-text-fill: white; /* Texto en blanco */
+}
+
+#btnBorrar {
+    -fx-background-color: #f44336; /* Rojo */
+    -fx-text-fill: white; /* Texto en blanco */
+}
