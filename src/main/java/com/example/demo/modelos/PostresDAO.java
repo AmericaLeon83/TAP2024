@@ -7,23 +7,21 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-// import static sample.Main.*;
+public class PostresDAO {
 
-public class BebidasDAO {
-
-    private int idBebida;
-    private String nombreBebida;
+    private int idPostre;
+    private String nombrePostre;
     private String descripcion;
     private double precio;
     private Statement stmt;
 
-    public int getIdBebida() { return idBebida; }
+    public int getIdPostre() { return idPostre; }
 
-    public void setIdBebida(int idBebida) { this.idBebida = idBebida; }
+    public void setIdPostre(int idPostre) { this.idPostre = idPostre; }
 
-    public String getNombreBebida() { return nombreBebida; }
+    public String getNombrePostre() { return nombrePostre; }
 
-    public void setNombreBebida(String nombreBebida) { this.nombreBebida = nombreBebida; }
+    public void setNombrePostre(String nombrePostre) { this.nombrePostre = nombrePostre; }
 
     public String getDescripcion() { return descripcion; }
 
@@ -34,16 +32,16 @@ public class BebidasDAO {
     public void setPrecio(double precio) { this.precio = precio; }
 
     public void INSERTAR(){
-        String query = "INSERT INTO bebidas (nombreBebida, descripcion, precio) " +
-                "VALUES('"+this.nombreBebida+"','"+this.descripcion+"',"+this.precio+")";
+        String query = "INSERT INTO postres (nombrePostre, descripcion, precio) " +
+                "VALUES('"+this.nombrePostre+"','"+this.descripcion+"',"+this.precio+")";
         try {
             Statement stmt = Conexion.connection.createStatement();
             // Ejecutar la consulta de inserción
             stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
-            // Obtener el ID generado para la nueva bebida
+            // Obtener el ID generado para el nuevo postre
             ResultSet rs = stmt.getGeneratedKeys();
             if (rs.next()) {
-                this.idBebida = rs.getInt(1); // Obtener el ID generado
+                this.idPostre = rs.getInt(1); // Obtener el ID generado
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -51,8 +49,8 @@ public class BebidasDAO {
     }
 
     public void ACTUALIZAR(){
-        String query = "UPDATE bebidas SET nombreBebida='"+this.nombreBebida+"', descripcion='"+this.descripcion+"'," +
-                "precio="+this.precio+" WHERE idBebida = "+this.idBebida;
+        String query = "UPDATE postres SET nombrePostre='"+this.nombrePostre+"', descripcion='"+this.descripcion+"'," +
+                "precio="+this.precio+" WHERE idPostre = "+this.idPostre;
         try {
             Statement stmt = Conexion.connection.createStatement();
             stmt.executeUpdate(query);
@@ -62,7 +60,7 @@ public class BebidasDAO {
     }
 
     public void ELIMINAR(){
-        String query = "DELETE FROM bebidas WHERE idBebida = "+this.idBebida;
+        String query = "DELETE FROM postres WHERE idPostre = "+this.idPostre;
         try {
             Statement stmt = Conexion.connection.createStatement();
             stmt.executeUpdate(query);
@@ -71,29 +69,29 @@ public class BebidasDAO {
         }
     }
 
-    public ObservableList<BebidasDAO> SELECCIONAR(){
+    public ObservableList<PostresDAO> SELECCIONAR(){
 
-        ObservableList<BebidasDAO> listaBebidas = FXCollections.observableArrayList();
-        BebidasDAO objBebida;
-        String query = "SELECT * FROM bebidas ORDER BY nombreBebida";
+        ObservableList<PostresDAO> listaPostres = FXCollections.observableArrayList();
+        PostresDAO objPostre;
+        String query = "SELECT * FROM postres ORDER BY nombrePostre";
         try {
             stmt = Conexion.connection.createStatement();
             ResultSet res = stmt.executeQuery(query);
             while( res.next() ){
-                objBebida = new BebidasDAO();
-                objBebida.setIdBebida(res.getInt("idBebida"));
-                objBebida.setNombreBebida(res.getString("nombreBebida"));
-                objBebida.setDescripcion(res.getString("descripcion"));
-                objBebida.setPrecio(res.getDouble("precio"));
-                listaBebidas.add(objBebida);
+                objPostre = new PostresDAO();
+                objPostre.setIdPostre(res.getInt("idPostre"));
+                objPostre.setNombrePostre(res.getString("nombrePostre"));
+                objPostre.setDescripcion(res.getString("descripcion"));
+                objPostre.setPrecio(res.getDouble("precio"));
+                listaPostres.add(objPostre);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return listaBebidas;
+        return listaPostres;
     }
 
     public void seleccionarPorId() {
-        // Aquí iría el código para seleccionar una bebida por su id
+        // Aquí iría el código para seleccionar un postre por su id
     }
 }

@@ -1,12 +1,12 @@
 package com.example.demo.modelos;
 
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 
 public class ClientesDAO {
 
@@ -32,18 +32,19 @@ public class ClientesDAO {
 
     public void setDireccionCliente(String direccionCliente) { this.direccionCliente = direccionCliente; }
 
-
     public void INSERTAR(){
-        String query ="INSERT INTO cliente (nombreCliente, telefonoCliente, direccionCliente) " +
+        String query = "INSERT INTO cliente (nombreCliente, telefonoCliente, direccionCliente) " +
                 "VALUES('"+this.nombreCliente+"','"+this.telefonoCliente+"','"+this.direccionCliente+"')";
-
-        try {
+        try{
             Statement stmt = Conexion.connection.createStatement();
             stmt.executeUpdate(query);
         }catch (Exception e){
             e.printStackTrace();
         }
     }
+
+
+
 
     public void ACTUALIZAR(){
         String query = "UPDATE cliente SET nombreCliente='"+this.nombreCliente+"', telefonoCliente='"+this.telefonoCliente+"'," +
@@ -56,6 +57,7 @@ public class ClientesDAO {
         }
     }
 
+
     public void ELIMINAR(){
         String query = "DELETE FROM cliente WHERE idCliente = "+this.idCliente;
         try{
@@ -66,14 +68,14 @@ public class ClientesDAO {
         }
     }
 
-    public ObservableList<ClientesDAO> CONSULTAR(){
+    public ObservableList<ClientesDAO> SELECCIONAR(){
 
         ObservableList<ClientesDAO> listaClientes = FXCollections.observableArrayList();
         ClientesDAO objCliente;
         String query = "SELECT * FROM cliente ORDER BY nombreCliente";
-        try{
-            EmpleadosDAO objEmp;
-            Statement stmt = Conexion.connection.createStatement();
+
+        try {
+            stmt = Conexion.connection.createStatement();
             ResultSet res = stmt.executeQuery(query);
             while( res.next() ){
                 objCliente = new ClientesDAO();

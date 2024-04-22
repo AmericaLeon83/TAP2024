@@ -14,7 +14,6 @@ import javafx.stage.Stage;
 import com.example.demo.modelos.Conexion;
 import com.example.demo.vistas.MenuTablas;
 
-
 public class Main extends Application {
 
     private Scene escena;

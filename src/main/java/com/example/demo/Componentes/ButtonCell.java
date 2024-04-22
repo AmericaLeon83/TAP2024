@@ -1,4 +1,4 @@
-package com.example.demo.Componentes;
+/*package com.example.demo.Componentes;
 
 import com.example.demo.modelos.EmpleadosDAO;
 import com.example.demo.vistas.EmpleadosForm;
@@ -40,4 +40,4 @@ public class ButtonCell extends TableCell<EmpleadosDAO,String> {
         if( !empty )
             this.setGraphic(btnCelda);
     }
-}
+}*/

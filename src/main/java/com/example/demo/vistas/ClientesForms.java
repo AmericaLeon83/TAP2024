@@ -1,7 +1,6 @@
+package com.example.demo.vistas;
 
-/*package com.example.demo.vistas;
-
-
+import com.example.demo.modelos.ClientesDAO;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,7 +8,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import sample.models.ClientesDAO;
 
 public class ClientesForms extends Stage {
 
@@ -20,12 +18,15 @@ public class ClientesForms extends Stage {
     private ClientesDAO objCDAO;
     private TableView<ClientesDAO> tbvProductos;
 
-    public ClientesForms(TableView<ClientesDAO> tbvProductos, ClientesDAO objCDAO){
+    public ClientesForms(TableView<ClientesDAO> tbvProductos, ClientesDAO objCDAO) {
         this.tbvProductos = tbvProductos;
-        if( objCDAO != null )
+        if (objCDAO != null) {
             this.objCDAO = objCDAO;             // La acción es una actualización
-        else
+        } else {
             this.objCDAO = new ClientesDAO();  // La acción es una inserción
+            // Inicializar idCliente como 0 para un nuevo cliente
+            this.objCDAO.setIdCliente(0);
+        }
         CrearUI();
         this.setTitle("Formulario De Clientes");
         this.setScene(escena);
@@ -53,7 +54,7 @@ public class ClientesForms extends Stage {
             objCDAO.setTelefonoCliente(txttelefono.getText());
             objCDAO.setDireccionCliente(txtdireccion.getText());
 
-            if( objCDAO.getIdCliente() > 0 )
+            if (objCDAO.getIdCliente() > 0)
                 objCDAO.ACTUALIZAR();
             else
                 objCDAO.INSERTAR();
@@ -67,8 +68,7 @@ public class ClientesForms extends Stage {
         vBox = new VBox();
         vBox.setSpacing(10.0);
         vBox.setPadding(new Insets(10.0));
-        vBox.getChildren().addAll(txtNombre,txttelefono,txtdireccion,btnGuardar);
-        escena = new Scene(vBox,300 ,250);
+        vBox.getChildren().addAll(txtNombre, txttelefono, txtdireccion, btnGuardar);
+        escena = new Scene(vBox, 300, 250);
     }
 }
-*/
