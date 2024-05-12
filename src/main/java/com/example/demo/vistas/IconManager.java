@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class IconManager {
+
     // Mapa para asociar nombres de bebidas con URL de iconos
     private static final Map<String, String> bebidaIconMap = new HashMap<>();
     private static final Map<String, String> desayunoIconMap = new HashMap<>();
@@ -94,30 +95,41 @@ public class IconManager {
         platilloIconMap.put("Taco de Camarón", "https://cdn-icons-png.flaticon.com/128/894/894861.png");
     }
 
-    // Método para obtener la URL del icono de una bebida específica
-    public static String getIconURL(String nombreBebida) {
-        return bebidaIconMap.getOrDefault(nombreBebida, "https://cdn-icons-png.flaticon.com/128/1249/1249169.png");
-        // return desayunoIconMap.getOrDefault(nombreDesayuno.toLowerCase(), "URL_POR_DEFECTO");
-    }
-    public static String getIconURLD(String nombreDesayuno) {
-        return desayunoIconMap.getOrDefault(nombreDesayuno.toLowerCase(), "URL_POR_DEFECTO");
-    }
-    public static String getIconURLB(String nombreBocadillo) {
-        return bocadilloIconMap.getOrDefault(nombreBocadillo, "https://cdn-icons-png.flaticon.com/128/2936/2936159.png");
-    }
-    public static String getIconURLG(String nombreGuarnicion) {
-        return guarnicionIconMap.getOrDefault(nombreGuarnicion, "https://cdn-icons-png.flaticon.com/128/144/144763.png");
-    }
-    public static String getIconURLC(String nombreCafe) {
-        return cafeIconMap.getOrDefault(nombreCafe.toLowerCase(), "https://cdn-icons-png.flaticon.com/128/1249/1249169.png");
-    }
-    public static String getIconURLP(String nombrePostre) {
-        return postreIconMap.getOrDefault(nombrePostre, "https://cdn-icons-png.flaticon.com/128/1249/1249169.png");
-    }
-    public static String getIconURLS(String nombreSnackTapas) {
-        return snackTapasIconMap.getOrDefault(nombreSnackTapas, "https://cdn-icons-png.flaticon.com/128/1249/1249169.png");
-    }
-    public static String getIconURLPP(String nombrePlatillo) {
-        return platilloIconMap.getOrDefault(nombrePlatillo, "https://cdn-icons-png.flaticon.com/128/3604/3604458.png");
+    public static String getIconURL(String nombrePlato, String categoria) {
+        String iconURL = null;
+        switch (categoria) {
+            case "bebida":
+                iconURL = bebidaIconMap.get(nombrePlato);
+                break;
+            case "desayuno":
+                iconURL = desayunoIconMap.get(nombrePlato);
+                break;
+            case "bocadillo":
+                iconURL = bocadilloIconMap.get(nombrePlato);
+                break;
+            case "guarnicion":
+                iconURL = guarnicionIconMap.get(nombrePlato);
+                break;
+            case "cafe":
+                iconURL = cafeIconMap.get(nombrePlato);
+                break;
+            case "postre":
+                iconURL = postreIconMap.get(nombrePlato);
+                break;
+            case "snackTapas":
+                iconURL = snackTapasIconMap.get(nombrePlato);
+                break;
+            case "platillo":
+                iconURL = platilloIconMap.get(nombrePlato);
+                break;
+            default:
+                break;
+        }
+        if (iconURL == null) {
+            // Devuelve una URL de icono predeterminada si no se encuentra ninguna
+            iconURL = "https://cdn-icons-png.flaticon.com/128/894/894861.png";
+        }
+        return iconURL;
     }
 }
+

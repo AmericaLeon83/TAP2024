@@ -1,26 +1,28 @@
 package com.example.demo.Componentes;
 
-import com.example.demo.vistas.MesasTaqueria;
+
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableCell;
 
-import com.example.demo.modelos.MesaDAO;
+import com.example.demo.modelos.UsuariosDAO;
+import com.example.demo.vistas.UsuarioTaqueria;
+
 import java.util.Optional;
 
-public class CellCustomMesa extends TableCell<MesaDAO, String> {
+public class CellCustomUsuario extends TableCell<UsuariosDAO, String> {
     private Button btnCelda;
     private int opc;
-    private MesaDAO objMDAO;
+    private UsuariosDAO objUDAO;
 
-    public CellCustomMesa(int opc, MesasTaqueria mesasTaqueria) {
+    public CellCustomUsuario(int opc, UsuarioTaqueria usuarioTaqueria) {
         this.opc = opc;
         if (opc == 1) {
             btnCelda = new Button("Editar");
             btnCelda.setOnAction(event -> {
-                objMDAO = CellCustomMesa.this.getTableView().getItems().get(CellCustomMesa.this.getIndex());
-                mesasTaqueria.actualizarFormulario(objMDAO); // Llamar al método actualizarFormulario de MesasTaqueria
+                objUDAO = CellCustomUsuario.this.getTableView().getItems().get(CellCustomUsuario.this.getIndex());
+                usuarioTaqueria.actualizarFormulario(objUDAO); // Llamar al método actualizarFormulario de UsuarioTaqueria
             });
         } else {
             btnCelda = new Button("Borrar");
@@ -28,14 +30,14 @@ public class CellCustomMesa extends TableCell<MesaDAO, String> {
                 Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
                 alerta.setTitle("Mensaje del Sistema");
                 alerta.setHeaderText("Confirmar acción");
-                alerta.setContentText("¿Realmente deseas borrar esta mesa?");
+                alerta.setContentText("¿Realmente deseas borrar este usuario?");
                 Optional<ButtonType> result = alerta.showAndWait();
 
                 if (result.get() == ButtonType.OK) {
-                    objMDAO = CellCustomMesa.this.getTableView().getItems().get(CellCustomMesa.this.getIndex());
-                    objMDAO.ELIMINAR();
-                    CellCustomMesa.this.getTableView().setItems(objMDAO.SELECCIONAR());
-                    CellCustomMesa.this.getTableView().refresh();
+                    objUDAO = CellCustomUsuario.this.getTableView().getItems().get(CellCustomUsuario.this.getIndex());
+                    objUDAO.ELIMINAR();
+                    CellCustomUsuario.this.getTableView().setItems(objUDAO.SELECCIONAR());
+                    CellCustomUsuario.this.getTableView().refresh();
                 }
             });
         }

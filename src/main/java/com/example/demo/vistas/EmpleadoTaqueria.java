@@ -3,84 +3,113 @@ package com.example.demo.vistas;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import com.example.demo.Componentes.CellCustomeEmpleados;
-import com.example.demo.modelos.EmpleadosDAO;
+import javafx.util.Callback;
 
-
-public class EmpleadoTaqueria extends Stage {
+import com.example.demo.Componentes.CellCustomEmpleado;
+import com.example.demo.modelos.EmpleadoDAO;
+public class EmpleadoTaqueria extends Stage{
 
     private Scene escena;
-    private TableView<EmpleadosDAO> tbvEmpleado;
+    private TableView<EmpleadoDAO> tbvEmpleados;
     private Button btnAgregar;
-    private VBox vBox;
-    private EmpleadosDAO EmpDAO;
+    private GridPane gridPane;
+    private EmpleadoDAO empDAO;
+    private EmpleadosForms empleadosForms;
 
     public EmpleadoTaqueria() {
-        EmpDAO = new EmpleadosDAO();
+        empDAO = new EmpleadoDAO();
+        empleadosForms = new EmpleadosForms(tbvEmpleados, null); // Crear el formulario de empleado
+
         CrearUI();
         this.setTitle("Empleados Taqueria :)");
         this.setScene(escena);
         this.show();
     }
-
     private void CrearUI() {
-
-        tbvEmpleado = new TableView<>();
+        tbvEmpleados = new TableView<>();
         btnAgregar = new Button("Nuevo Empleado");
-        EmpDAO = new EmpleadosDAO();
+        empDAO = new EmpleadoDAO();
         btnAgregar.setOnAction(event -> {
-            new EmpleadosForms(tbvEmpleado, null);
-        });
+            empleadosForms = new EmpleadosForms(tbvEmpleados, null); // Actualizar el formulario de empleado
+            gridPane.add(empleadosForms, 1, 0); // Añadir el formulario de empleado al GridPane
 
-        vBox = new VBox();
-        vBox.setSpacing(10.0);
-        vBox.setPadding(new Insets(10.0));
-        vBox.getChildren().addAll(tbvEmpleado, btnAgregar);
-        escena = new Scene(vBox, 980, 300);
+        });
+        tbvEmpleados.setStyle("-fx-background-color: #fffed1;" +
+                "-fx-table-cell-border-color: transparent;" +
+                "-fx-padding: 10;" +
+                "-fx-font-size: 14;" +
+                "-fx-font-family: 'Arial';");
+        gridPane = new GridPane();
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(10, 10, 10, 10));
+
+        // Agregar la tabla y el formulario de empleado al GridPane
+        gridPane.add(tbvEmpleados, 0, 0);
+        gridPane.add(btnAgregar, 0, 1);
+
+        escena = new Scene(gridPane, 1200, 450);
         CrearTabla();
     }
 
+    public void actualizarFormulario(EmpleadoDAO empleado) {
+        empleadosForms = new EmpleadosForms(tbvEmpleados, empleado); // Actualizar el formulario de empleado con los datos del empleado seleccionado
+        gridPane.add(empleadosForms, 1, 0); // Añadir el formulario de empleado al GridPane
+    }
+
     private void CrearTabla() {
-        TableColumn<EmpleadosDAO, Integer> tbcIdEmpleado = new TableColumn<>("ID");
-        tbcIdEmpleado.setCellValueFactory(new PropertyValueFactory<>("idEmpleado"));
+        TableColumn<EmpleadoDAO, Integer> columnaIdEmpleado = new TableColumn<>("ID");
+        columnaIdEmpleado.setCellValueFactory(new PropertyValueFactory<>("id"));
 
-        TableColumn<EmpleadosDAO, String> tbcNomEmpleado = new TableColumn<>("NOMBRE");
-        tbcNomEmpleado.setCellValueFactory(new PropertyValueFactory<>("nomEmpleado"));
+        TableColumn<EmpleadoDAO, String> columnaNomEmpleado = new TableColumn<>("Nombre");
+        columnaNomEmpleado.setCellValueFactory(new PropertyValueFactory<>("nomEmpleado"));
 
-        TableColumn<EmpleadosDAO, String> tbcApeMatEmpleado = new TableColumn<>("APELLIDO MATERNO");
-        tbcApeMatEmpleado.setCellValueFactory(new PropertyValueFactory<>("apellidoMaternoE"));
-        tbcApeMatEmpleado.setMinWidth(130);
+        TableColumn<EmpleadoDAO, String> columnaApellidoMaternoE = new TableColumn<>("Apellido Materno");
+        columnaApellidoMaternoE.setCellValueFactory(new PropertyValueFactory<>("apellidoMaternoE"));
 
-        TableColumn<EmpleadosDAO, String> tbcApePatEmpleado = new TableColumn<>("APELLIDO PATERNO");
-        tbcApePatEmpleado.setCellValueFactory(new PropertyValueFactory<>("apellidoPaternoE"));
-        tbcApePatEmpleado.setMinWidth(130);
+        TableColumn<EmpleadoDAO, String> columnaApellidoPaternoE = new TableColumn<>("Apellido Paterno");
+        columnaApellidoPaternoE.setCellValueFactory(new PropertyValueFactory<>("apellidoPaternoE"));
 
-        TableColumn<EmpleadosDAO, String> tbcRFCEmpleado = new TableColumn<>("RFC");
-        tbcRFCEmpleado.setCellValueFactory(new PropertyValueFactory<>("RFCEmpleado"));
+        TableColumn<EmpleadoDAO, String> columnaRFCEmpleado = new TableColumn<>("RFC");
+        columnaRFCEmpleado.setCellValueFactory(new PropertyValueFactory<>("RFCEmpleado"));
 
-        TableColumn<EmpleadosDAO, Double> tbcSueldoEmpleado = new TableColumn<>("SUELDO");
-        tbcSueldoEmpleado.setCellValueFactory(new PropertyValueFactory<>("salario"));
+        TableColumn<EmpleadoDAO, Float> columnaSalario = new TableColumn<>("Salario");
+        columnaSalario.setCellValueFactory(new PropertyValueFactory<>("salario"));
 
-        TableColumn<EmpleadosDAO, String> tbcTelfono = new TableColumn<>("TELEFONO");
-        tbcTelfono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
+        TableColumn<EmpleadoDAO, String> columnaTelefono = new TableColumn<>("Teléfono");
+        columnaTelefono.setCellValueFactory(new PropertyValueFactory<>("telefono"));
 
-        TableColumn<EmpleadosDAO, String> tbcEmailEmpleado = new TableColumn<>("EMAIL");
-        tbcEmailEmpleado.setCellValueFactory(new PropertyValueFactory<>("emailEmpleado"));
+        TableColumn<EmpleadoDAO, String> columnaDireccion = new TableColumn<>("Dirección");
+        columnaDireccion.setCellValueFactory(new PropertyValueFactory<>("direccion"));
 
-        TableColumn<EmpleadosDAO, String> tbcEditar = new TableColumn<>("Editar");
-        tbcEditar.setCellFactory(param -> new CellCustomeEmpleados(1));
+        TableColumn<EmpleadoDAO, Integer> columnaId_usuarios = new TableColumn<>("ID Usuario");
+        columnaId_usuarios.setCellValueFactory(new PropertyValueFactory<>("id_usuarios"));
 
-        TableColumn<EmpleadosDAO, String> tbcBorrar = new TableColumn<>("Borrar");
-        tbcBorrar.setCellFactory(param -> new CellCustomeEmpleados(2));
+        EmpleadoTaqueria empleadoTaqueria = this; // Guardar una referencia a this
 
-        tbvEmpleado.getColumns().addAll(tbcIdEmpleado, tbcNomEmpleado, tbcApePatEmpleado, tbcApeMatEmpleado,
-                tbcRFCEmpleado, tbcSueldoEmpleado, tbcTelfono, tbcEmailEmpleado, tbcEditar, tbcBorrar);
-        tbvEmpleado.setItems(EmpDAO.SELECCIONAREmpleados());
+        TableColumn<EmpleadoDAO, String> tbcEditar = new TableColumn<>("Editar");
+        tbcEditar.setCellFactory(new Callback<TableColumn<EmpleadoDAO, String>, TableCell<EmpleadoDAO, String>>() {
+            @Override
+            public TableCell<EmpleadoDAO, String> call(TableColumn<EmpleadoDAO, String> param) {
+                return new CellCustomEmpleado(1, empleadoTaqueria); // Pasar la referencia a EmpleadoTaqueria al constructor de CellCustomEmpleado
+            }
+        });
 
+        TableColumn<EmpleadoDAO, String> tbcBorrar = new TableColumn<>("Borrar");
+        tbcBorrar.setCellFactory(new Callback<TableColumn<EmpleadoDAO, String>, TableCell<EmpleadoDAO, String>>() {
+            @Override
+            public TableCell<EmpleadoDAO, String> call(TableColumn<EmpleadoDAO, String> param) {
+                return new CellCustomEmpleado(2, empleadoTaqueria); // Pasar la referencia a EmpleadoTaqueria al constructor de CellCustomEmpleado
+            }
+        });
+
+        tbvEmpleados.getColumns().addAll(columnaIdEmpleado, columnaNomEmpleado, columnaApellidoMaternoE, columnaApellidoPaternoE, columnaRFCEmpleado, columnaSalario, columnaTelefono, columnaDireccion, columnaId_usuarios, tbcEditar, tbcBorrar);
+        tbvEmpleados.setItems(empDAO.SELECCIONAR());
     }
 }

@@ -1,6 +1,952 @@
 package com.example.demo.vistas;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import com.example.demo.modelos.OrdenDAO;
+import com.example.demo.modelos.PedidoDAO;
+import com.example.demo.modelos.PlatosDAO;
+
+
+import javax.swing.text.Document;
+import java.io.FileOutputStream;
+import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+public class MenuTablas extends Stage {
+
+    private Scene escena;
+    private VBox vBox;
+    private GridPane gridPane;
+    private Button btnusuarios, btnEmpleados, btnOrdenes, btnPlatillos, btnInsumos, btnMesass;
+    private Button[] btnMesas;
+    private Label lblTotal; // Campo para el Label del total
+    private Button btnPedido; // Campo para el botón de pedido
+    private TableView<OrdenDAO> tbvOrdenes;
+    private TableView<OrdenDAO> tblOrdenes;
+    private int mesaSeleccionada; // Declarar aquí
+
+    public MenuTablas() {
+        CrearUI();
+        this.setTitle("Menu De La Taqueria :)");
+        this.setScene(escena);
+        this.show();
+    }
+    private void CrearUI() {
+        MenuBar menuBar = new MenuBar();
+
+        // Crear menú de tablas
+        Menu menuTablas = new Menu();
+        menuTablas.setGraphic(createMenuIconWithText("https://cdn-icons-png.flaticon.com/128/1085/1085805.png", "Administración"));
+
+        MenuItem itemMenuTablas = new MenuItem("Mostrar Tablas");
+        itemMenuTablas.setOnAction(event -> {
+            LimpiarGridPane();
+            LimpiarVBox();
+            MostrarBotonesTablas();
+        });
+
+        menuTablas.getItems().add(itemMenuTablas);
+
+        // Crear menú para mesas
+        Menu menuMesas = new Menu();
+        menuMesas.setGraphic(createMenuIconWithText("https://cdn-icons-png.flaticon.com/128/4001/4001039.png", "Mesas"));
+
+
+        MenuItem itemMenuMesas = new MenuItem("Mostrar Mesas");
+        itemMenuMesas.setOnAction(event -> {
+            LimpiarGridPane();
+            LimpiarVBox();
+            MostrarBotonesMesas();
+        });
+
+        menuMesas.getItems().add(itemMenuMesas);
+
+        // Crear menú para categorías
+        Menu menuCategorias = new Menu();
+        menuCategorias.setGraphic(createMenuIconWithText("https://cdn-icons-png.flaticon.com/128/1357/1357589.png", "Categorías"));
+
+        MenuItem itemMenuCategorias = new MenuItem("Mostrar Categorias");
+        itemMenuCategorias.setOnAction(event -> {
+            LimpiarGridPane();
+            LimpiarVBox();
+            MostrarBotonesCategorias();
+        });
+
+        menuCategorias.getItems().add(itemMenuCategorias);
+        // Crear menú para teléfonos
+        Menu menuTelefonos = new Menu();
+        menuTelefonos.setGraphic(createMenuIconWithText("https://cdn-icons-png.flaticon.com/128/5828/5828548.png", "Teléfonos"));
+
+        MenuItem itemMenuTelefonos = new MenuItem("Mostrar Teléfonos");
+        itemMenuTelefonos.setOnAction(event -> {
+        });
+
+        menuTelefonos.getItems().add(itemMenuTelefonos);
+
+        // Crear menú para caja
+        Menu menuCaja = new Menu();
+        menuCaja.setGraphic(createMenuIconWithText("https://cdn-icons-png.flaticon.com/128/4689/4689889.png", "Caja"));
+
+        MenuItem itemMenuCaja = new MenuItem("Mostrar Caja");
+        itemMenuCaja.setOnAction(event -> {
+            LimpiarGridPane();
+            LimpiarVBox();
+            MostrarBotonesCaja();
+        });
+
+        menuCaja.getItems().add(itemMenuCaja);
+
+        // Crear menú para pedido
+        Menu menuPedido = new Menu();
+        menuPedido.setGraphic(createMenuIconWithText("https://cdn-icons-png.flaticon.com/128/6384/6384868.png", "Pedido"));
+
+        MenuItem itemMenuPedido = new MenuItem("Mostrar Pedido");
+        itemMenuPedido.setOnAction(event -> {
+            LimpiarGridPane();
+            LimpiarVBox();
+            MostrarBotonesPedido(); // Asegúrate de tener este método en tu clase
+        });
+
+        menuPedido.getItems().add(itemMenuPedido);
+        // Agregar menús a la barra de menú
+        menuBar.getMenus().addAll(menuTablas, menuMesas, menuCategorias, menuTelefonos, menuCaja, menuPedido);
+
+        vBox = new VBox();
+        gridPane = new GridPane();
+        gridPane.setPadding(new Insets(20));
+        gridPane.setVgap(20);
+        gridPane.setHgap(20);
+
+        // Agregar elementos al VBox
+        vBox.getChildren().addAll(menuBar, gridPane);
+        escena = new Scene(vBox, 750, 380);
+    }
+    private void MostrarBotonesTablas() {
+        LimpiarGridPane();
+        // Botones para las tablas
+        btnusuarios = createButtonWithIcon("https://cdn-icons-png.flaticon.com/512/6009/6009864.png", "Tabla Usuarios");
+        btnEmpleados = createButtonWithIcon("https://cdn-icons-png.flaticon.com/128/1830/1830878.png", "Tabla Empleados");
+        btnOrdenes = createButtonWithIcon("https://cdn-icons-png.flaticon.com/512/2082/2082194.png", "Tabla Ordenes");
+        btnPlatillos = createButtonWithIcon("https://cdn-icons-png.flaticon.com/128/1046/1046849.png", "Tabla MENU");
+        btnInsumos = createButtonWithIcon("https://cdn-icons-png.flaticon.com/512/917/917940.png", "Tabla Pedidos");
+        btnMesass = createButtonWithIcon("https://cdn-icons-png.flaticon.com/128/673/673281.png", "Tabla Mesas");
+
+        // Asignar acciones a los botones
+        btnusuarios.setOnAction(event -> new UsuarioTaqueria());
+        btnEmpleados.setOnAction(action -> new EmpleadoTaqueria());
+        btnOrdenes.setOnAction(action -> new OrdenTaqueria());
+        btnPlatillos.setOnAction(action -> new PlatosTaqueria());
+        btnInsumos.setOnAction(action -> new PedidoTaqueria());
+        btnMesass.setOnAction(action -> new MesasTaqueria());
+
+        // Agregar botones al GridPane
+
+        gridPane.addRow(0, btnusuarios, btnEmpleados, btnPlatillos);
+        gridPane.addRow(1,  btnMesass, btnOrdenes, btnInsumos);
+
+
+        for (Node child : gridPane.getChildren()) {
+            if (child instanceof Button) {
+                GridPane.setHalignment(child, HPos.RIGHT);
+            }
+        }
+    }
+
+    private void MostrarBotonesCategorias() {
+        LimpiarGridPane();
+        // Botones para categorías
+        Button btnBebidas = createButtonWithIcon("https://cdn-icons-png.flaticon.com/128/1113/1113278.png", "Bebidas");
+        btnBebidas.setOnAction(event -> {
+            MostrarBebidas();
+        });
+        Button btnDesayunos = createButtonWithIcon("https://cdn-icons-png.flaticon.com/128/887/887359.png", "Desayunos");
+        btnDesayunos.setOnAction(event -> {
+            MostrarDesayunos();
+        });
+        Button btnBocadillos = createButtonWithIcon("https://cdn-icons-png.flaticon.com/128/5508/5508486.png", "Bocadillos");
+        btnBocadillos.setOnAction(event -> {
+            MostrarBocadillos();
+        });
+        Button btnGuarniciones = createButtonWithIcon("https://cdn-icons-png.flaticon.com/128/985/985478.png", "Guarniciones");
+        btnGuarniciones.setOnAction(event -> {
+            MostrarGuarniciones();
+        });
+        Button btnCafes = createButtonWithIcon("https://cdn-icons-png.flaticon.com/128/7438/7438571.png", "Cafes");
+        btnCafes.setOnAction(event -> {
+            MostrarCafes();
+        });
+        Button btnPostres = createButtonWithIcon("https://cdn-icons-png.flaticon.com/128/5347/5347946.png", "Postres");
+        btnPostres.setOnAction(event -> {
+            MostrarPostres();
+        });
+        Button btnSnacksTapas = createButtonWithIcon("https://cdn-icons-png.flaticon.com/128/10164/10164488.png", "Snacks/Tapas");
+        btnSnacksTapas.setOnAction(event -> {
+            MostrarSnacksTapas();
+        });
+        Button btnPlatillo = createButtonWithIcon("https://cdn-icons-png.flaticon.com/128/1886/1886807.png", "Platillos");
+        btnPlatillo.setOnAction(event -> {
+            MostrarPlatillos();
+        });
+
+
+        // Agregar botones al GridPane
+        gridPane.addRow(0, btnBebidas, btnDesayunos, btnBocadillos, btnGuarniciones);
+        gridPane.addRow(1, btnCafes, btnPostres, btnSnacksTapas, btnPlatillo);
+    }
+
+    private void MostrarBotonesMesas() {
+        LimpiarGridPane();
+        try {
+            // Conexión con la base de datos
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/taqueria2", "adminTacos2", "123");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT * FROM mesas");
+
+            // Botones para mesas
+            btnMesas = new Button[8];
+            int count = 0;
+
+            while (rs.next() && count < 8) {
+                int id = rs.getInt("id");
+                int numeroMesa = rs.getInt("numeroMesa");
+                String estado = rs.getString("estado");
+
+                // Crear botón de mesa
+                Button btnMesa = new Button("Mesa " + numeroMesa);
+                btnMesa.setOnAction(event -> {
+                    // Acción al hacer clic en la mesa
+                    if (btnMesa.getStyle().equals("-fx-background-color: green")) {
+                        btnMesa.setStyle("-fx-background-color: red");
+                        ActualizarEstadoMesa(id, "Ocupada");
+                        mesaSeleccionada = numeroMesa; // Almacenar el número de la mesa
+                        MostrarBotonesCaja();
+                    } else {
+                        btnMesa.setStyle("-fx-background-color: green");
+                        ActualizarEstadoMesa(id, "Libre");
+                    }
+                });
+
+                // Establecer el color del botón según el estado de la mesa
+                if (estado.equals("Ocupada")) {
+                    btnMesa.setStyle("-fx-background-color: red");
+                } else {
+                    btnMesa.setStyle("-fx-background-color: green");
+                }
+
+                btnMesas[count] = btnMesa;
+                count++;
+            }
+
+            // Agregar botones de mesas al GridPane
+            gridPane.addRow(0, btnMesas[0], btnMesas[1], btnMesas[2], btnMesas[3]);
+            gridPane.addRow(1, btnMesas[4], btnMesas[5], btnMesas[6], btnMesas[7]);
+
+            // Cerrar la conexión con la base de datos
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void ActualizarEstadoMesa(int id, String estado) {
+        try {
+            // Conexión con la base de datos
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/taqueria2", "adminTacos2", "123");
+            PreparedStatement pstmt = conn.prepareStatement("UPDATE mesas SET estado = ? WHERE id = ?");
+
+            pstmt.setString(1, estado);
+            pstmt.setInt(2, id);
+            pstmt.executeUpdate();
+
+            // Cerrar la conexión con la base de datos
+            pstmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    private void LimpiarVBox() {
+        if (vBox.getChildren().contains(lblTotal)) {
+            vBox.getChildren().remove(lblTotal);
+        }
+        if (vBox.getChildren().contains(btnPedido)) {
+            vBox.getChildren().remove(btnPedido);
+        }
+    }
+    private void MostrarBotonesCaja() {
+        LimpiarGridPane();
+
+        // Crear la tabla de ordenes
+        TableView<OrdenDAO> tblOrdenes = crearTablaOrdenes();
+
+        // Crear la tabla de platos
+        TableView<PlatosDAO> tblPlatos = crearTablaPlatos(tblOrdenes);
+
+        // Agregar las tablas al GridPane
+        gridPane.add(tblPlatos, 0, 0, 1, 2);
+        gridPane.add(tblOrdenes, 1, 0, 1, 2);
+
+        // Inicializar el Label del total
+        lblTotal = new Label();
+        vBox.getChildren().add(lblTotal);
+
+        // Inicializar el botón de pedido
+        btnPedido = new Button("Realizar pedido");
+        btnPedido.setStyle("-fx-font-size: 15px; " +
+                "-fx-font-weight: bold; " +
+                "-fx-text-fill: #ffffff; " +
+                "-fx-background-color: #4CAF50; " +
+                "-fx-padding: 10px; " +
+                "-fx-border-radius: 5px;");
+        vBox.getChildren().add(btnPedido);
+        // Agregar un manejador de eventos al botón
+        btnPedido.setOnAction(event -> {
+            // Obtener los datos de la tabla de órdenes
+            ObservableList<OrdenDAO> listaOrdenes = tblOrdenes.getItems();
+
+            // Insertar los datos de la tabla de órdenes en la tabla de pedidos
+            for (OrdenDAO orden : listaOrdenes) {
+                // Crear un objeto PedidoDAO con los datos de la orden
+                PedidoDAO pedido = new PedidoDAO();
+                pedido.setNombre(orden.getNombre());
+                pedido.setPrecio(orden.getPrecio());
+                pedido.setCantidad(orden.getCantidad());
+                pedido.setComentario(orden.getComentario());
+                pedido.setId_plato(orden.getId_plato());
+
+                // Insertar el pedido en la base de datos
+                pedido.INSERTAR(); // Utilizamos el método INSERTAR para insertar el pedido en la base de datos
+            }
+          //  generarPDF(listaOrdenes, total);
+
+            // Crear una instancia de OrdenDAO
+            OrdenDAO ordenDAO = new OrdenDAO();
+
+            // Crear una nueva lista de órdenes vacía
+            ObservableList<OrdenDAO> nuevaListaOrdenes = FXCollections.observableArrayList();
+
+            // Actualizar los items de la tabla de órdenes con la nueva lista vacía
+            tblOrdenes.setItems(nuevaListaOrdenes);
+
+            // Mostrar un mensaje
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Pedido");
+            alert.setHeaderText(null);
+            alert.setContentText("Pedido realizado y almacenado en la tabla de pedidos");
+            alert.showAndWait();
+
+            // Actualizar la tabla y el total
+            actualizarTablaOrdenes(tblOrdenes);
+        });
+
+        // Actualizar el total
+        actualizarTabla();
+    }
+
+   /* private void generarPDF(ObservableList<OrdenDAO> listaOrdenes, float total) {
+        Document document = new Document();
+        try (FileOutputStream fos = new FileOutputStream("Pedido.pdf")) {
+            PdfWriter.getInstance(document, fos);
+            document.open();
+
+            Paragraph titulo = new Paragraph("Detalle del Pedido");
+            titulo.setAlignment(Element.ALIGN_CENTER);
+            document.add(titulo);
+            document.add(new Paragraph("\n"));
+
+            PdfPTable table = new PdfPTable(4); // 4 columnas
+            table.addCell("ID");
+            table.addCell("Nombre");
+            table.addCell("Precio");
+            table.addCell("Cantidad");
+
+            for (OrdenDAO orden : listaOrdenes) {
+                table.addCell(String.valueOf(orden.getId()));
+                table.addCell(orden.getNombre());
+                table.addCell(String.valueOf(orden.getPrecio()));
+                table.addCell(String.valueOf(orden.getCantidad()));
+            }
+
+            document.add(table);
+            document.add(new Paragraph("\n"));
+            document.add(new Paragraph("Total a pagar: " + total));
+        } catch (Exception e) {
+            // Manejo de la excepción
+            System.err.println("Se produjo un error al generar el PDF: " + e.getMessage());
+        }
+    }*/
+
+
+    public void actualizarTabla() {
+        OrdenDAO ordenDAO = new OrdenDAO();
+        float total = ordenDAO.calcularTotal();
+
+        // Verificar si lblTotal ya existe en vBox
+        if (lblTotal != null && vBox.getChildren().contains(lblTotal)) {
+            // Si lblTotal ya existe, eliminarlo del layout
+            vBox.getChildren().remove(lblTotal);
+        }
+
+        // Crear un nuevo Label para mostrar el total
+        lblTotal = new Label("Total a pagar: " + total);
+
+// Aplicar CSS al Label
+        lblTotal.setStyle("-fx-font-size: 15px; " +
+                "-fx-font-weight: bold; " +
+                "-fx-text-fill: #ff0000; " +
+                "-fx-background-color: #ffff00; " +
+                "-fx-padding: 10px; " +
+                "-fx-border-color: #0000ff; " +
+                "-fx-border-width: 5px; " +
+                "-fx-border-radius: 10px;");
+
+        // Agregar el Label al layout
+        vBox.getChildren().add(lblTotal);
+    }
+    private TableView<PlatosDAO> crearTablaPlatos(TableView<OrdenDAO> tblOrdenes) {
+        TableView<PlatosDAO> tblPlatos = new TableView<>();
+        TableColumn<PlatosDAO, Integer> tbcId = new TableColumn<>("ID");
+        tbcId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        TableColumn<PlatosDAO, String> tbcNombre = new TableColumn<>("Nombre");
+        tbcNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+        TableColumn<PlatosDAO, Double> tbcPrecio = new TableColumn<>("Precio");
+        tbcPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
+
+        // Crear una instancia de PlatosDAO y obtener la lista de platos
+        PlatosDAO platosDAO = new PlatosDAO();
+        ObservableList<PlatosDAO> listaPlatos = platosDAO.SELECCIONAR();
+
+        // Añadir los platos a la tabla
+        tblPlatos.setItems(listaPlatos);
+        tblPlatos.getColumns().addAll(tbcId, tbcNombre, tbcPrecio);
+
+        // Agregar un RowFactory personalizado para manejar los eventos de clic
+        tblPlatos.setRowFactory(tv -> {
+            TableRow<PlatosDAO> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty() && event.getButton()==MouseButton.PRIMARY
+                        && event.getClickCount() == 2) {
+
+                    PlatosDAO clickedRow = row.getItem();
+                    // Aquí puedes agregar el plato seleccionado a la tabla detalle_pedidos
+                    agregarPlatoAOrden(clickedRow, tblOrdenes);
+                }
+            });
+            return row ;
+        });
+        return tblPlatos;
+    }
+
+    private TableView<OrdenDAO> crearTablaOrdenes() {
+        TableColumn<OrdenDAO, Integer> tbcId = new TableColumn<>("ID");
+        tbcId.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+        TableColumn<OrdenDAO, String> tbcNombre = new TableColumn<>("Nombre");
+        tbcNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+
+        TableColumn<OrdenDAO, Double> tbcPrecio = new TableColumn<>("Precio");
+        tbcPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
+
+        TableColumn<OrdenDAO, Integer> tbcCantidad = new TableColumn<>("Cantidad");
+        tbcCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
+
+        TableColumn<OrdenDAO, Double> tbcSubtotal = new TableColumn<>("Subtotal");
+        tbcSubtotal.setCellValueFactory(new PropertyValueFactory<>("subtotal"));
+
+        TableColumn<OrdenDAO, String> tbcComentario = new TableColumn<>("Comentario");
+        tbcComentario.setCellValueFactory(new PropertyValueFactory<>("comentario"));
+
+        TableColumn<OrdenDAO, Integer> tbcIdPlato = new TableColumn<>("ID Plato");
+        tbcIdPlato.setCellValueFactory(new PropertyValueFactory<>("id_plato"));
+
+        TableView<OrdenDAO> tablaOrdenes = new TableView<>();
+        tablaOrdenes.getColumns().add(tbcId);
+        tablaOrdenes.getColumns().add(tbcNombre);
+        tablaOrdenes.getColumns().add(tbcPrecio);
+        tablaOrdenes.getColumns().add(tbcCantidad);
+        tablaOrdenes.getColumns().add(tbcSubtotal);
+        tablaOrdenes.getColumns().add(tbcComentario);
+        tablaOrdenes.getColumns().add(tbcIdPlato);
+
+        return tablaOrdenes;
+    }
+    private void agregarPlatoAOrden(PlatosDAO plato, TableView<OrdenDAO> tblOrdenes) {
+        OrdenDAO orden = new OrdenDAO();
+        orden.setNombre(plato.getNombre());
+        orden.setPrecio((float) plato.getPrecio());
+        orden.setCantidad(1); // Inicialmente, la cantidad es 1
+        // No establecemos el subtotal aquí, ya que es una columna calculada en la base de datos
+        orden.setId_plato(plato.getId()); // Establecemos el id_plato con el id del plato seleccionado
+        orden.INSERTAR(); // Insertar la orden en la base de datos
+        actualizarTablaOrdenes(tblOrdenes);
+        actualizarTabla(); // Actualizar el total
+    }
+    private void actualizarTablaOrdenes(TableView<OrdenDAO> tblOrdenes) {
+        // Crear una nueva instancia de OrdenDAO y obtener la lista de ordenes
+        OrdenDAO ordenDAO = new OrdenDAO();
+        ObservableList<OrdenDAO> listaOrdenes = ordenDAO.SELECCIONAR();
+
+        // Actualizar los items de la tabla de ordenes
+        tblOrdenes.setItems(listaOrdenes);
+    }
+    private void MostrarBotonesPedido() {
+        LimpiarGridPane(); // Limpiamos el GridPane para mostrar la nueva interfaz
+
+        // Crear la tabla de pedidos
+        TableView<PedidoDAO> tblPedidos = crearTablaPedidos();
+
+        // Agregar la tabla de pedidos y el botón de realizar pedido al GridPane
+        gridPane.add(tblPedidos, 0, 0);
+
+    }
+    private TableView<PedidoDAO> crearTablaPedidos() {
+
+        // private TableView<PedidoDAO> crearTablaPedidos (TableView < OrdenDAO > tblOrdenes) {
+        TableView<PedidoDAO> tblPedidos = new TableView<>();
+        TableColumn<PedidoDAO, Integer> tbcIdPedido = new TableColumn<>("Pedido (ID)");
+        tbcIdPedido.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+        TableColumn<PedidoDAO, String> tbcNombre = new TableColumn<>("Nombre");
+        tbcNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+
+        TableColumn<PedidoDAO, Double> tbcPrecio = new TableColumn<>("Precio");
+        tbcPrecio.setCellValueFactory(new PropertyValueFactory<>("precio"));
+
+        TableColumn<PedidoDAO, Integer> tbcCantidad = new TableColumn<>("Cantidad");
+        tbcCantidad.setCellValueFactory(new PropertyValueFactory<>("cantidad"));
+
+        TableColumn<PedidoDAO, String> tbcComentario = new TableColumn<>("Comentario");
+        tbcComentario.setCellValueFactory(new PropertyValueFactory<>("comentario"));
+
+        TableColumn<PedidoDAO, Integer> tbcIdPlato = new TableColumn<>("ID Plato");
+        tbcIdPlato.setCellValueFactory(new PropertyValueFactory<>("id_plato"));
+
+        // Crear una instancia de PedidoDAO y obtener la lista de pedidos
+        PedidoDAO pedidoDAO = new PedidoDAO();
+        ObservableList<PedidoDAO> listaPedidos = pedidoDAO.SELECCIONAR();
+
+        // Añadir los pedidos a la tabla
+        tblPedidos.setItems(listaPedidos);
+        tblPedidos.getColumns().addAll(tbcIdPedido, tbcNombre, tbcPrecio, tbcCantidad, tbcComentario, tbcIdPlato);
+        return tblPedidos;
+    }
+
+    //   }
+
+    //-------------------------
+    //-------------------------
+    private int obtenerIdMesa() {
+        // Aquí va el código para obtener el id de la mesa
+        // Este es solo un ejemplo, necesitarás reemplazarlo con tu propio código
+        return 1;
+    }
+
+    private int obtenerNumMesa() {
+        // Aquí va el código para obtener el número de la mesa
+        // Este es solo un ejemplo, necesitarás reemplazarlo con tu propio código
+        return 1;
+    }
+
+    private double calcularTotal() {
+        // Aquí va el código para calcular el total
+        // Este es solo un ejemplo, necesitarás reemplazarlo con tu propio código
+        return 0.0;
+    }
+
+    private String obtenerUsuario() {
+        // Aquí va el código para obtener el usuario
+        // Este es solo un ejemplo, necesitarás reemplazarlo con tu propio código
+        return "usuario";
+    }
+
+    private int crearNuevoPedido(int idMesa, int numMesa, double total, String usuario) {
+        // Aquí va el código para crear un nuevo pedido
+        // Este es solo un ejemplo, necesitarás reemplazarlo con tu propio código
+        return 1;
+    }
+
+
+
+    private void LimpiarGridPane() {
+        gridPane.getChildren().clear();
+    }
+
+    private Button createButtonWithIcon(String iconUrl, String buttonText) {
+        Button button = new Button();
+        ImageView imageView = new ImageView(new Image(iconUrl));
+        imageView.setFitWidth(55); // Ajustar el ancho del icono
+        imageView.setPreserveRatio(true); // Mantener la relación de aspecto del icono
+        Label label = new Label(buttonText);
+        VBox vbox = new VBox();
+        vbox.getChildren().addAll(imageView, label);
+        vbox.setAlignment(javafx.geometry.Pos.CENTER);
+        button.setGraphic(vbox);
+        return button;
+    }
+
+    private HBox createMenuIconWithText(String iconUrl, String text) {
+        ImageView imageView = new ImageView(new Image(iconUrl));
+        imageView.setFitWidth(55); // Ajustar el ancho del icono
+        imageView.setPreserveRatio(true); // Mantener la relación de aspecto del icono
+        Label label = new Label(text);
+        HBox hbox = new HBox();
+        hbox.getChildren().addAll(imageView, label);
+        hbox.setAlignment(javafx.geometry.Pos.CENTER);
+        return hbox;
+    }
+
+
+    private void MostrarDesayunos() {
+        LimpiarGridPane();
+        try {
+            // Conexión con la base de datos
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/taqueria2", "adminTacos2", "123");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id, nombre, categoria FROM platos WHERE categoria = 'desayuno'");
+
+            // Botones para los desayunos
+            int row = 0;
+            int col = 0;
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String categoria = rs.getString("categoria");
+                String iconoURL = IconManager.getIconURL(nombre, categoria); // Obtener la URL del icono correspondiente
+
+                Button btnBebida = createButtonWithIcon(iconoURL, nombre);
+                btnBebida.setOnAction(event -> {
+
+                });
+
+                // Agregar botón de bebida al GridPane
+                gridPane.add(btnBebida, col, row);
+
+                // Actualizar posición en el GridPane
+                col++;
+                if (col == 4) {
+                    col = 0;
+                    row++;
+                }
+            }
+
+            // Cerrar la conexión con la base de datos
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    private void MostrarBocadillos() {
+        LimpiarGridPane();
+        try {
+            // Conexión con la base de datos
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/taqueria2", "adminTacos2", "123");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id, nombre, categoria FROM platos WHERE categoria = 'bocadillo'");
+
+            // Botones para los bocadillos
+            int row = 0;
+            int col = 0;
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String categoria = rs.getString("categoria");
+                String iconoURL = IconManager.getIconURL(nombre, categoria); // Obtener la URL del icono correspondiente
+
+                Button btnBebida = createButtonWithIcon(iconoURL, nombre);
+                btnBebida.setOnAction(event -> {
+
+                });
+
+                // Agregar botón de bebida al GridPane
+                gridPane.add(btnBebida, col, row);
+
+                // Actualizar posición en el GridPane
+                col++;
+                if (col == 4) {
+                    col = 0;
+                    row++;
+                }
+            }
+
+            // Cerrar la conexión con la base de datos
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    private void MostrarGuarniciones() {
+        LimpiarGridPane();
+        try {
+            // Conexión con la base de datos
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/taqueria2", "adminTacos2", "123");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id, nombre, categoria FROM platos WHERE categoria = 'guarnicion'");
+
+            // Botones para las guarniciones
+            int row = 0;
+            int col = 0;
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String categoria = rs.getString("categoria");
+                String iconoURL = IconManager.getIconURL(nombre, categoria); // Obtener la URL del icono correspondiente
+
+                Button btnBebida = createButtonWithIcon(iconoURL, nombre);
+                btnBebida.setOnAction(event -> {
+
+                });
+
+                // Agregar botón de bebida al GridPane
+                gridPane.add(btnBebida, col, row);
+
+                // Actualizar posición en el GridPane
+                col++;
+                if (col == 4) {
+                    col = 0;
+                    row++;
+                }
+            }
+
+            // Cerrar la conexión con la base de datos
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void MostrarCafes() {
+        LimpiarGridPane();
+        try {
+            // Conexión con la base de datos
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/taqueria2", "adminTacos2", "123");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id, nombre, categoria FROM platos WHERE categoria = 'cafe'");
+
+            // Botones para los cafés
+            int row = 0;
+            int col = 0;
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String categoria = rs.getString("categoria");
+                String iconoURL = IconManager.getIconURL(nombre, categoria); // Obtener la URL del icono correspondiente
+
+                Button btnBebida = createButtonWithIcon(iconoURL, nombre);
+                btnBebida.setOnAction(event -> {
+
+                });
+
+                // Agregar botón de bebida al GridPane
+                gridPane.add(btnBebida, col, row);
+
+                // Actualizar posición en el GridPane
+                col++;
+                if (col == 4) {
+                    col = 0;
+                    row++;
+                }
+            }
+
+            // Cerrar la conexión con la base de datos
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void MostrarPostres() {
+        LimpiarGridPane();
+        try {
+            // Conexión con la base de datos
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/taqueria2", "adminTacos2", "123");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id, nombre, categoria FROM platos WHERE categoria = 'postre'");
+
+            // Botones para los postres
+            int row = 0;
+            int col = 0;
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String categoria = rs.getString("categoria");
+                String iconoURL = IconManager.getIconURL(nombre, categoria); // Obtener la URL del icono correspondiente
+
+                Button btnBebida = createButtonWithIcon(iconoURL, nombre);
+                btnBebida.setOnAction(event -> {
+
+                });
+
+                // Agregar botón de bebida al GridPane
+                gridPane.add(btnBebida, col, row);
+
+                // Actualizar posición en el GridPane
+                col++;
+                if (col == 4) {
+                    col = 0;
+                    row++;
+                }
+            }
+
+            // Cerrar la conexión con la base de datos
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    private void MostrarSnacksTapas() {
+        LimpiarGridPane();
+        try {
+            // Conexión con la base de datos
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/taqueria2", "adminTacos2", "123");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id, nombre, categoria FROM platos WHERE categoria = 'snackTapas'");
+
+            // Botones para los snacks o tapas
+            int row = 0;
+            int col = 0;
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String categoria = rs.getString("categoria");
+                String iconoURL = IconManager.getIconURL(nombre, categoria); // Obtener la URL del icono correspondiente
+
+                Button btnBebida = createButtonWithIcon(iconoURL, nombre);
+                btnBebida.setOnAction(event -> {
+
+                });
+
+                // Agregar botón de bebida al GridPane
+                gridPane.add(btnBebida, col, row);
+
+                // Actualizar posición en el GridPane
+                col++;
+                if (col == 4) {
+                    col = 0;
+                    row++;
+                }
+            }
+
+            // Cerrar la conexión con la base de datos
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void MostrarBebidas() {
+        LimpiarGridPane();
+        try {
+            // Conexión con la base de datos
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/taqueria2", "adminTacos2", "123");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id, nombre, categoria FROM platos WHERE categoria = 'bebida'");
+
+            // Botones para las bebidas
+            int row = 0;
+            int col = 0;
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String categoria = rs.getString("categoria");
+                String iconoURL = IconManager.getIconURL(nombre, categoria); // Obtener la URL del icono correspondiente
+
+                Button btnBebida = createButtonWithIcon(iconoURL, nombre);
+                btnBebida.setOnAction(event -> {
+
+                });
+
+                // Agregar botón de bebida al GridPane
+                gridPane.add(btnBebida, col, row);
+
+                // Actualizar posición en el GridPane
+                col++;
+                if (col == 4) {
+                    col = 0;
+                    row++;
+                }
+            }
+
+            // Cerrar la conexión con la base de datos
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void MostrarPlatillos() {
+        LimpiarGridPane();
+        try {
+            // Conexión con la base de datos
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/taqueria2", "adminTacos2", "123");
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT id, nombre, categoria FROM platos WHERE categoria = 'platillos'");
+
+            // Botones para los platillos
+            int row = 0;
+            int col = 0;
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String categoria = rs.getString("categoria");
+                String iconoURL = IconManager.getIconURL(nombre, categoria); // Obtener la URL del icono correspondiente
+
+                Button btnBebida = createButtonWithIcon(iconoURL, nombre);
+                btnBebida.setOnAction(event -> {
+
+                });
+
+                // Agregar botón de bebida al GridPane
+                gridPane.add(btnBebida, col, row);
+
+                // Actualizar posición en el GridPane
+                col++;
+                if (col == 4) {
+                    col = 0;
+                    row++;
+                }
+            }
+
+            // Cerrar la conexión con la base de datos
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+}
+/*import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -1317,7 +2263,7 @@ public class MenuTablas extends Stage {
         return hbox;
     }
 }
-
+*/
 
 /*package com.example.demo.vistas;
 
