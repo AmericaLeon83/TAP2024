@@ -6,7 +6,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import com.example.demo.modelos.PedidoDAO;
-
 public class PedidosForms extends VBox {
     private Label lblTitulo; // Nuevo campo para el título
     private TextField txtNombre, txtPrecio, txtCantidad, txtComentario, txtId_plato;

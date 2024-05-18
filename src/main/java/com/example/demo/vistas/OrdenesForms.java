@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 import com.example.demo.modelos.OrdenDAO;
+
 public class OrdenesForms extends VBox {
     private Label lblTitulo; // Nuevo campo para el título
     private TextField txtNombre, txtPrecio, txtCantidad, txtSubtotal, txtComentario, txtId_plato;

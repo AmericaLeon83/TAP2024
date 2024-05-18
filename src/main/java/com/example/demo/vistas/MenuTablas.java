@@ -26,6 +26,7 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+
 public class MenuTablas extends Stage {
 
     private Scene escena;
@@ -333,7 +334,7 @@ public class MenuTablas extends Stage {
                 // Insertar el pedido en la base de datos
                 pedido.INSERTAR(); // Utilizamos el método INSERTAR para insertar el pedido en la base de datos
             }
-          //  generarPDF(listaOrdenes, total);
+            // generarPDF(listaOrdenes, total);
 
             // Crear una instancia de OrdenDAO
             OrdenDAO ordenDAO = new OrdenDAO();
@@ -359,10 +360,10 @@ public class MenuTablas extends Stage {
         actualizarTabla();
     }
 
-   /* private void generarPDF(ObservableList<OrdenDAO> listaOrdenes, float total) {
+  /*  private void generarPDF(ObservableList<OrdenDAO> listaOrdenes, float total) {
         Document document = new Document();
-        try (FileOutputStream fos = new FileOutputStream("Pedido.pdf")) {
-            PdfWriter.getInstance(document, fos);
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream("Pedido.pdf"));
             document.open();
 
             Paragraph titulo = new Paragraph("Detalle del Pedido");
@@ -386,12 +387,13 @@ public class MenuTablas extends Stage {
             document.add(table);
             document.add(new Paragraph("\n"));
             document.add(new Paragraph("Total a pagar: " + total));
+
         } catch (Exception e) {
-            // Manejo de la excepción
-            System.err.println("Se produjo un error al generar el PDF: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            document.close();
         }
     }*/
-
 
     public void actualizarTabla() {
         OrdenDAO ordenDAO = new OrdenDAO();
@@ -944,8 +946,8 @@ public class MenuTablas extends Stage {
             e.printStackTrace();
         }
     }
-
 }
+
 /*import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.scene.Node;

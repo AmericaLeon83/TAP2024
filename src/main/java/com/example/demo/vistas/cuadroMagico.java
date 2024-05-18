@@ -1,8 +1,155 @@
 //LEON RODRIGUEZ AMERICA PATRICIA
 package com.example.demo.vistas;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.RandomAccessFile;
+
+import java.io.*;
+
+import javafx.event.ActionEvent;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import javafx.scene.control.Label;
+
+public class cuadroMagico extends Stage {
+    private Scene escena;
+    private Label lblMensaje;
+    private TextField txtTamanioCuadro;
+    private Button btnCalcular;
+    private Button btnBorrar;
+    private GridPane gdpCuadroMagico;
+    private final String archivoCuadroMagico = "cuadro_magico.txt";
+
+    public cuadroMagico() {
+        // Crear Label para el mensaje
+        lblMensaje = new Label("Los números impares mayores o iguales a 3 son 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, ...");
+
+        // Crear TextField para el tamaño del cuadro
+        txtTamanioCuadro = new TextField();
+        txtTamanioCuadro.setPromptText("Introduce el tamaño del cuadro");
+
+        // Crear botón para calcular el cuadro mágico
+        btnCalcular = new Button("Calcular cuadro mágico");
+        btnCalcular.setOnAction(this::calcularCuadroMagico);
+        btnCalcular.setId("btnCalcular");
+
+        // Crear botón para borrar el cuadro mágico
+        btnBorrar = new Button("Borrar cuadro mágico");
+        btnBorrar.setOnAction(this::borrarCuadroMagico);
+        btnBorrar.setId("btnBorrar");
+
+        // Crear GridPane para mostrar el cuadro mágico
+        gdpCuadroMagico = new GridPane();
+        gdpCuadroMagico.setAlignment(Pos.CENTER);
+        gdpCuadroMagico.setHgap(10); // Espacio horizontal entre las celdas
+        gdpCuadroMagico.setVgap(10); // Espacio vertical entre las celdas
+
+        // Crear contenedor principal
+        VBox vContenedorPrincipal = new VBox(lblMensaje, txtTamanioCuadro, btnCalcular, btnBorrar, gdpCuadroMagico);
+
+        vContenedorPrincipal.setSpacing(10);
+        vContenedorPrincipal.setAlignment(Pos.CENTER);
+
+        // Crear escena y añadir estilos
+        escena = new Scene(vContenedorPrincipal, 800, 600);
+        // Agregar el archivo CSS al estilo de la escena
+        escena.getStylesheets().add(getClass().getResource("/Estilos/CuadroMagico.css").toString());
+        this.setTitle("Cuadro Mágico");
+        this.setScene(escena);
+        this.show();
+    }
+
+
+    private void calcularCuadroMagico(ActionEvent event) {
+
+        int tamanio = Integer.parseInt(txtTamanioCuadro.getText());
+
+        // Verificar que el tamaño del cuadro sea válido
+        if (tamanio < 3 || tamanio % 2 == 0) {
+            System.out.println("El tamaño del cuadro debe ser un número impar mayor o igual a 3.");
+            return;
+        }
+
+        // Limpiar el GridPane
+        gdpCuadroMagico.getChildren().clear();
+
+        // Calcular el cuadro mágico
+        generarCuadroMagico(tamanio);
+
+
+    }
+
+
+    private void borrarCuadroMagico(ActionEvent event) {
+        // Limpiar el GridPane y el TextField
+        gdpCuadroMagico.getChildren().clear();
+        txtTamanioCuadro.clear();
+    }
+
+    private void generarCuadroMagico(int tamanio) {
+        int[][] cuadroMagico = new int[tamanio][tamanio];
+        int numero = 1;
+        int fila = 0;
+        int columna = tamanio / 2;
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(archivoCuadroMagico));
+
+            while (numero <= tamanio * tamanio) {
+                // Guardar el número en el cuadro mágico
+                cuadroMagico[fila][columna] = numero;
+
+                // Calcular la posición siguiente
+                int nuevaFila = (fila - 1 + tamanio) % tamanio;
+                int nuevaColumna = (columna + 1) % tamanio;
+
+                // Verificar si la siguiente celda está ocupada
+                if (cuadroMagico[nuevaFila][nuevaColumna] != 0) {
+                    fila = (fila + 1) % tamanio;
+                } else {
+                    fila = nuevaFila;
+                    columna = nuevaColumna;
+                }
+                numero++;
+            }
+
+            // Escribir el cuadro mágico en el archivo
+            for (int i = 0; i < tamanio; i++) {
+                StringBuilder filaCuadro = new StringBuilder();
+                for (int j = 0; j < tamanio; j++) {
+                    filaCuadro.append(cuadroMagico[i][j]);
+                    if (j < tamanio - 1) {
+                        filaCuadro.append(",");
+                    }
+                }
+                writer.write("[" + filaCuadro.toString() + "]\n");
+            }
+
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Mostrar el cuadro mágico en el GridPane
+        for (int i = 0; i < tamanio; i++) {
+            for (int j = 0; j < tamanio; j++) {
+                Text textoNumero = new Text(String.valueOf(cuadroMagico[i][j]));
+                StackPane celda = new StackPane();
+                celda.setStyle("-fx-border-color: #2F4F4F; -fx-background-color: #76D7C4;");
+                celda.getChildren().add(textoNumero);
+                gdpCuadroMagico.add(celda, j, i);
+            }
+        }
+    }
+}
+
+/*package com.example.demo.vistas;
+import java.io.*;
+
 import javafx.event.ActionEvent;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -129,6 +276,7 @@ public class cuadroMagico extends Stage {
         return null;
     }
     // Método para escribir el cuadro mágico en un archivo de acceso aleatorio
+
     private void escribirCuadroMagicoEnArchivo(int tamanio) {
         try {
             RandomAccessFile archivo = new RandomAccessFile(new File(archivoCuadroMagico), "rw");
@@ -147,7 +295,37 @@ public class cuadroMagico extends Stage {
             e.printStackTrace();
         }
     }
-}
+}*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*import javafx.event.ActionEvent;
 import javafx.geometry.Pos;

@@ -1,4 +1,4 @@
-//PENDIENTE
+//PENDIENTE 95% completado quitarle la animacion de cambio de turno en alguno de los metodos
 
 package com.example.demo.vistas;
 
@@ -49,6 +49,10 @@ public class memorama2 extends Stage {
     private boolean primerTurnoJugador2 = true; // Variable para rastrear el primer turno del jugador 2
     // Agrega una variable para contar el número total de pares encontrados
     private int totalParesEncontrados = 0;
+    // Agrega la variable al principio de tu clase
+    private boolean turnoExtra = false;
+    // Agregar la bandera para rastrear si se encontró un par en el turno actual
+    private boolean encontroPar = false;
     public memorama2() {
         crearUI();
         this.setTitle("Memorama :)");
@@ -238,6 +242,7 @@ public class memorama2 extends Stage {
     }
 
     // Método para comprobar si se han formado pares
+// Método para comprobar si se han formado pares
     private void comprobarPares() {
         // Obtener las posiciones de las cartas seleccionadas por el jugador actual
         int[] cartasSeleccionadas = obtenerCartasSeleccionadas();
@@ -248,8 +253,9 @@ public class memorama2 extends Stage {
         String imagenCarta1 = nombresImagenes.get(carta1);
         String imagenCarta2 = nombresImagenes.get(carta2);
 
-        if (imagenCarta1.equals(imagenCarta2)) {
-            // Si las imágenes son iguales, se forma un par
+        // Verificar si las cartas forman un par y si no están ya bloqueadas
+        if (imagenCarta1.equals(imagenCarta2) && !parejasEncontradas[carta1 / arBtnCartas[0].length][carta1 % arBtnCartas[0].length]) {
+            // Si las imágenes son iguales y no están bloqueadas, se forma un par
             // Marcar las cartas como ya encontradas
             parejasEncontradas[carta1 / arBtnCartas[0].length][carta1 % arBtnCartas[0].length] = true;
             parejasEncontradas[carta2 / arBtnCartas[0].length][carta2 % arBtnCartas[0].length] = true;
@@ -269,35 +275,43 @@ public class memorama2 extends Stage {
                 lblPuntosValor1.setText(Integer.toString(paresEncontradosJugador1)); // Actualizar los puntos del jugador 1
                 int puntos = Integer.parseInt(lblScore1.getText()) + 1; // Incrementar los puntos del jugador 1
                 lblScore1.setText(Integer.toString(puntos)); // Actualizar el label de puntos del jugador 1
+                turnoExtra = true;
+               // encontroPar = true; // Establecer la bandera en true si se encontró un par en el turno actual
             } else {
                 paresEncontradosJugador2++; // Incrementar el contador de pares del jugador 2
                 lblJugador2.setText("Jugador 2: " + paresEncontradosJugador2 + " Pares"); // Actualizar el label del jugador 2
                 lblPuntosValor2.setText(Integer.toString(paresEncontradosJugador2)); // Actualizar los puntos del jugador 2
                 int puntos = Integer.parseInt(lblScore2.getText()) + 1; // Incrementar los puntos del jugador 2
                 lblScore2.setText(Integer.toString(puntos)); // Actualizar el label de puntos del jugador 2
+                turnoExtra = true;
+               // encontroPar = true; // Establecer la bandera en true si se encontró un par en el turno actual
             }
 
             // Verificar si todas las parejas han sido encontradas
             if (totalParesEncontrados == nombresImagenes.size() / 2) {
-            // Verificar si todas las parejas han sido encontradas
-            //if (todasLasParejasEncontradas()) {
                 // Detener el temporizador total del juego
                 timeline.stop();
 
                 // Mostrar el ganador
                 mostrarGanador();
-            } else {
-                // Cambiar al siguiente jugador si no se ha completado el juego
-                cambiarTurno();
-                // Iniciar el temporizador del nuevo turno
-                iniciarTemporizadorTurno();
             }
         } else {
-            // Si las imágenes no son iguales, voltear las cartas nuevamente después de un breve tiempo
+            // Si las imágenes no son iguales o ya están bloqueadas, voltear las cartas nuevamente después de un breve tiempo
             voltearCartasNoEncontradas();
+            turnoExtra = false; // No hay turno extra si no se encontró un par
+        }
+
+        // No cambiar el turno si hay un turno extra
+        if (!turnoExtra) {
+            cambiarTurno();
+        } else {
+            // Iniciar el temporizador del nuevo turno
+            iniciarTemporizadorTurno();
         }
     }
-//----------------
+
+
+    //----------------
 private void mostrarGanador() {
     // Detener el temporizador total
     timeline.stop();
@@ -403,7 +417,9 @@ private void mostrarGanador() {
     }
 
     // Método para iniciar el temporizador del turno actual
+    // Método para iniciar el temporizador del turno actual
     private void iniciarTemporizadorTurno() {
+        tiempoTurno = 10;
         if (jugadorActual == 1) {
             iniciarTemporizador(lblTiempoTurno1); // Iniciar temporizador para el jugador 1
         } else {
@@ -414,17 +430,7 @@ private void mostrarGanador() {
     // Método para iniciar el temporizador de un turno
     private void iniciarTemporizador(Label lblTiempoTurno) {
         tiempoTurno = 10; // Duración predeterminada del temporizador
-        timelineVolteo.playFromStart(); // Iniciar el Timeline para el tiempo de volteo de las cartas
-
-        timelineVolteo.setOnFinished(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                // Mostrar el tiempo restante del turno como "00:00"
-                lblTiempoTurno.setText("00:00");
-            }
-        });
-
-        // Ajustar la duración del KeyFrame para que sea de 10 segundos
+        timelineVolteo.stop(); // Detener el Timeline actual si está en ejecución
         timelineVolteo.getKeyFrames().setAll(new KeyFrame(Duration.seconds(tiempoTurno), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -433,12 +439,12 @@ private void mostrarGanador() {
             }
         }));
 
-        // Actualizar el tiempo restante del turno en el Label
         timelineVolteo.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
             int segundosRestantes = (int) (tiempoTurno - newTime.toSeconds());
             lblTiempoTurno.setText(String.format("%02d:%02d", segundosRestantes / 60, segundosRestantes % 60));
         });
 
+        timelineVolteo.playFromStart(); // Iniciar el Timeline para el tiempo de volteo de las cartas
         // Agregar espacios adicionales entre el temporizador y el puntaje del jugador
         lblTiempoTurno.setPadding(new Insets(0, 10, 0, 10)); // Ajusta el valor según sea necesario
     }
@@ -465,10 +471,14 @@ private void mostrarGanador() {
     }
     // Método para cambiar al siguiente jugador
     private void cambiarTurno() {
-        if (jugadorActual == 1) {
-            jugadorActual = 2; // Cambia al jugador 2
+        if (!turnoExtra && !encontroPar) {
+            if (jugadorActual == 1) {
+                jugadorActual = 2;
+            } else {
+                jugadorActual = 1;
+            }
         } else {
-            jugadorActual = 1; // Cambia al jugador 1
+            turnoExtra = false;
         }
         detenerTemporizador(); // Detiene el temporizador del turno actual
         activarJugador(jugadorActual); // Activa el turno del nuevo jugador
@@ -477,13 +487,9 @@ private void mostrarGanador() {
         // Si es el primer turno del jugador 2, realiza las mismas acciones que el primer turno del jugador 1
         if (jugadorActual == 2 && primerTurnoJugador2) {
             // Reiniciar el tiempo de turno del jugador 2
-            iniciarTemporizador(lblTiempoTurno2);
-            primerTurnoJugador2 = false; // Marcar que ya no es el primer turno del jugador 2
-            // Activar el temporizador de volteo de cartas para el jugador 2
-            timelineVolteo.playFromStart();
+            primerTurnoJugador2 = false;
         }
     }
-
 
     // Método para detener el temporizador del turno actual
     private void detenerTemporizador() {
@@ -501,7 +507,8 @@ private void mostrarGanador() {
             lblJugador1.setStyle("-fx-text-fill: red; -fx-font-weight: normal; -fx-font-size: 16px; -fx-font-family: 'Arial';");
         }
     }
-    /*private void activarJugador(int jugador) {
+}
+/*private void activarJugador(int jugador) {
         if (jugador == 1) {
             lblJugador1.setStyle("-fx-text-fill: green; -fx-font-weight: bold;");
             lblJugador2.setStyle("-fx-text-fill: red;");
@@ -510,9 +517,6 @@ private void mostrarGanador() {
             lblJugador1.setStyle("-fx-text-fill: red;");
         }
     }*/
-
-
-}
 
 
 /*package com.example.demo.vistas;

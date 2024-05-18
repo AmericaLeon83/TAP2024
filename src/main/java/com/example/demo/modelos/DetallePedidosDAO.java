@@ -45,14 +45,16 @@ public class DetallePedidosDAO {
         String query = "INSERT INTO detalle_pedidos (nombre, precio, cantidad, comentario, id_pedido) " +
                 "VALUES('"+this.nombre+"','"+this.precio+"','"+this.cantidad+"','"+this.comentario+"','"+this.id_pedido+"')";
         try {
-            Statement stmt = Conexion.connection.createStatement();
-            // Ejecutar la consulta de inserción
-            stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
-            // Obtener el ID generado para la nueva bebida
-            ResultSet rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                this.id = rs.getInt(1); // Obtener el ID generado
-            }
+
+                Statement stmt = Conexion.connection.createStatement();
+                // Ejecutar la consulta de inserción
+                stmt.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
+                // Obtener el ID generado para el nuevo detalle de pedido
+                ResultSet rs = stmt.getGeneratedKeys();
+                if (rs.next()) {
+                    this.id = rs.getInt(1); // Obtener el ID generado
+                }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -62,8 +64,10 @@ public class DetallePedidosDAO {
         String query = "UPDATE detalle_pedidos SET nombre='"+this.nombre+"', precio='"+this.precio+"'," +
                 "cantidad='"+this.cantidad+"', comentario='"+this.comentario+"', id_pedido='"+this.id_pedido+"' WHERE id = "+this.id;
         try {
-            Statement stmt = Conexion.connection.createStatement();
-            stmt.executeUpdate(query);
+
+                Statement stmt = Conexion.connection.createStatement();
+                stmt.executeUpdate(query);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -72,21 +76,25 @@ public class DetallePedidosDAO {
     public void eliminar(){
         String query = "DELETE FROM detalle_pedidos WHERE id = "+this.id;
         try {
-            Statement stmt = Conexion.connection.createStatement();
-            stmt.executeUpdate(query);
+
+                Statement stmt = Conexion.connection.createStatement();
+                stmt.executeUpdate(query);
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
     public ObservableList<DetallePedidosDAO> seleccionar(){
 
         ObservableList<DetallePedidosDAO> listaDetallePedidos = FXCollections.observableArrayList();
         DetallePedidosDAO objDetallePedido;
         String query = "SELECT * FROM detalle_pedidos";
         try {
-            stmt = Conexion.connection.createStatement();
-            ResultSet res = stmt.executeQuery(query);
-            while( res.next() ){
+
+                stmt = Conexion.connection.createStatement();
+                ResultSet res = stmt.executeQuery(query);
+                while( res.next() ){
                     objDetallePedido = new DetallePedidosDAO();
                     objDetallePedido.setId(res.getInt("id"));
                     objDetallePedido.setNombre(res.getString("nombre"));
@@ -95,7 +103,8 @@ public class DetallePedidosDAO {
                     objDetallePedido.setComentario(res.getString("comentario"));
                     objDetallePedido.setId_pedido(res.getInt("id_pedido"));
                     listaDetallePedidos.add(objDetallePedido);
-            }
+                }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

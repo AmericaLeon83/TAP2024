@@ -137,19 +137,19 @@ public class OrdenDAO {
             System.out.println("La conexión a la base de datos no se ha establecido correctamente.");
         }
     }
-   /* public static void BORRAR_TODOS() {
-        if (Conexion.conexion != null) {
-            String query = "DELETE FROM orden";
-            try {
-                this.stmt = Conexion.conexion.createStatement();
-                stmt.executeUpdate(query);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        } else {
-            System.out.println("La conexión a la base de datos no se ha establecido correctamente.");
-        }
-    }*/
+    /* public static void BORRAR_TODOS() {
+         if (Conexion.conexion != null) {
+             String query = "DELETE FROM orden";
+             try {
+                 this.stmt = Conexion.conexion.createStatement();
+                 stmt.executeUpdate(query);
+             } catch (SQLException e) {
+                 e.printStackTrace();
+             }
+         } else {
+             System.out.println("La conexión a la base de datos no se ha establecido correctamente.");
+         }
+     }*/
     public float calcularTotal() {
         float total = 0;
         String query = "SELECT SUM(subtotal) AS total FROM orden";

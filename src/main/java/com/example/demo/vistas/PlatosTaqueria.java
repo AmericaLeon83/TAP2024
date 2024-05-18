@@ -13,6 +13,7 @@ import javafx.util.Callback;
 
 import com.example.demo.Componentes.CellCustomPlato;
 import com.example.demo.modelos.PlatosDAO;
+
 public class PlatosTaqueria extends Stage{
 
     private Scene escena;

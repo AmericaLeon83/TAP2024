@@ -8,7 +8,6 @@ import javafx.scene.control.TableCell;
 
 import com.example.demo.modelos.MesaDAO;
 import java.util.Optional;
-
 public class CellCustomMesa extends TableCell<MesaDAO, String> {
     private Button btnCelda;
     private int opc;

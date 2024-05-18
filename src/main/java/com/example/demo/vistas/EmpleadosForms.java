@@ -7,6 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 
 import com.example.demo.modelos.EmpleadoDAO;
+
 public class EmpleadosForms extends VBox {
     private Label lblTitulo; // Nuevo campo para el título
     private TextField txtNomEmpleado, txtApellidoMaternoE, txtApellidoPaternoE, txtRFCEmpleado, txtSalario, txtTelefono, txtDireccion, txtId_usuarios;
