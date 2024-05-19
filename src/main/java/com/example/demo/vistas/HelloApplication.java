@@ -62,7 +62,7 @@ public class HelloApplication extends Application {
         mitEmpleado.setOnAction(actionEvent -> new EmpleadoTaqueria());
 
         mitImpresion = new MenuItem("Simulación de Impresión");
-        mitImpresion.setOnAction(actionEvent -> new simuladorimmprecion("Simulación de Impresión", "Archivo1", 10, "12:00:00"));
+        mitImpresion.setOnAction(actionEvent -> new simuladorimmprecion());
 
         menParcial1 = new Menu("Primer Parcial");
        // menParcial1.getItems().addAll(mitCalculadora);

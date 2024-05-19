@@ -1,0 +1,64 @@
+.root {
+    -fx-font-family: 'Arial';
+    -fx-padding: 10;
+    -fx-background-color: #f0f0f0;
+}
+
+.table-view {
+    -fx-font-size: 14px;
+    -fx-background-color: #E0FFFF; /* Color de fondo gris claro */
+    -fx-column-header-background: derive(-fx-base, 80%);
+    -fx-text-fill: #6a1b9a; /* Color morado para el texto de la tabla */
+}
+
+
+.button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 5 10 5 10;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+}
+
+.button:hover {
+    -fx-background-color: #45a049;
+}
+
+.progress-bar {
+    -fx-accent: #4CAF50;
+}
+.table-view {
+    -fx-font-size: 14px;
+    -fx-column-header-background: derive(-fx-base, 80%);
+}
+
+.table-view .column-header, .table-view .table-cell {
+    -fx-alignment: CENTER;
+}
+
+.progress-bar {
+    -fx-pref-width: 300px;
+    -fx-accent: #6a1b9a; /* Color de la barra de progreso */
+}
+
+.button {
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-color: #7b1fa2; /* Color de fondo */
+    -fx-text-fill: white; /* Color del texto */
+    -fx-background-radius: 5px;
+}
+
+.button:hover {
+    -fx-background-color: #9c27b0; /* Color de fondo al pasar el ratón */
+}
+
+.label-header {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #6a1b9a; /* Color morado */
+}
+.root-pane {
+    -fx-background-color: #FFF8DC; /* Color de fondo para el VBox principal */
+}

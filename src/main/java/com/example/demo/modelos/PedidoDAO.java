@@ -3,9 +3,8 @@ package com.example.demo.modelos;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.time.LocalDate;
 
 public class PedidoDAO {
     private int id;
@@ -88,6 +87,24 @@ public class PedidoDAO {
             e.printStackTrace();
         }
         return listaPedidos;
+    }
+
+    public void insertarVentaDetalle() {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/taqueria2", "adminTacos2", "123");
+            String query = "INSERT INTO venta_detalle (fecha, id_plato, cantidad, precio, comentario) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setDate(1, Date.valueOf(LocalDate.now()));
+            pstmt.setInt(2, this.id_plato);
+            pstmt.setInt(3, this.cantidad);
+            pstmt.setFloat(4, this.precio);
+            pstmt.setString(5, this.comentario);
+            pstmt.executeUpdate();
+            pstmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void seleccionarPorId() {
