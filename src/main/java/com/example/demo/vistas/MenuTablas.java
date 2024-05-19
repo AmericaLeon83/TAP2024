@@ -1,5 +1,6 @@
 package com.example.demo.vistas;
-
+import com.aspose.pdf.*;
+import com.aspose.pdf.Cell;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
@@ -19,13 +20,11 @@ import com.example.demo.modelos.OrdenDAO;
 import com.example.demo.modelos.PedidoDAO;
 import com.example.demo.modelos.PlatosDAO;
 
-
-import javax.swing.text.Document;
 import java.io.FileOutputStream;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
+import java.util.Locale;
 
 public class MenuTablas extends Stage {
 
@@ -39,8 +38,10 @@ public class MenuTablas extends Stage {
     private TableView<OrdenDAO> tbvOrdenes;
     private TableView<OrdenDAO> tblOrdenes;
     private int mesaSeleccionada; // Declarar aquí
+    private Label lblMesaSeleccionada;
 
     public MenuTablas() {
+        Locale.setDefault(new Locale("en", "US")); // Establece la configuración regional en inglés (Estados Unidos)
         CrearUI();
         this.setTitle("Menu De La Taqueria :)");
         this.setScene(escena);
@@ -88,16 +89,17 @@ public class MenuTablas extends Stage {
         });
 
         menuCategorias.getItems().add(itemMenuCategorias);
-        // Crear menú para teléfonos
-        Menu menuTelefonos = new Menu();
-        menuTelefonos.setGraphic(createMenuIconWithText("https://cdn-icons-png.flaticon.com/128/5828/5828548.png", "Teléfonos"));
+        // Crear menú para productos mas vendidos
+        Menu menuMasVendidos = new Menu();
+        menuMasVendidos.setGraphic(createMenuIconWithText("https://cdn-icons-png.flaticon.com/128/2424/2424721.png", "Más vendidos"));
 
-        MenuItem itemMenuTelefonos = new MenuItem("Mostrar Teléfonos");
-        itemMenuTelefonos.setOnAction(event -> {
+        MenuItem itemMenuMasVendidos = new MenuItem("Productos Más Vendidos");
+        itemMenuMasVendidos.setOnAction(event -> {
+            LimpiarGridPane();
+            LimpiarVBox();
+            MostrarProductosMasVendidos();
         });
-
-        menuTelefonos.getItems().add(itemMenuTelefonos);
-
+        menuMasVendidos.getItems().add(itemMenuMasVendidos);
         // Crear menú para caja
         Menu menuCaja = new Menu();
         menuCaja.setGraphic(createMenuIconWithText("https://cdn-icons-png.flaticon.com/128/4689/4689889.png", "Caja"));
@@ -124,7 +126,7 @@ public class MenuTablas extends Stage {
 
         menuPedido.getItems().add(itemMenuPedido);
         // Agregar menús a la barra de menú
-        menuBar.getMenus().addAll(menuTablas, menuMesas, menuCategorias, menuTelefonos, menuCaja, menuPedido);
+        menuBar.getMenus().addAll(menuTablas, menuMesas, menuCategorias, menuMasVendidos, menuCaja, menuPedido);
 
         vBox = new VBox();
         gridPane = new GridPane();
@@ -134,7 +136,7 @@ public class MenuTablas extends Stage {
 
         // Agregar elementos al VBox
         vBox.getChildren().addAll(menuBar, gridPane);
-        escena = new Scene(vBox, 750, 380);
+        escena = new Scene(vBox, 790, 430);
     }
     private void MostrarBotonesTablas() {
         LimpiarGridPane();
@@ -290,7 +292,67 @@ public class MenuTablas extends Stage {
             vBox.getChildren().remove(btnPedido);
         }
     }
-    private void MostrarBotonesCaja() {
+    private void MostrarProductosMasVendidos() {
+        LimpiarGridPane();  // Método para limpiar el GridPane antes de añadir los nuevos botones.
+
+        try {
+            // Conexión con la base de datos.
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/taqueria2", "adminTacos2", "123");
+
+            // Consulta SQL para obtener los 16 platos más vendidos.
+            String query = "SELECT p.id, p.nombre, p.categoria, COUNT(o.id_plato) AS total_ventas " +
+                    "FROM platos p " +
+                    "JOIN pedidos o ON p.id = o.id_plato " +
+                    "GROUP BY p.id, p.nombre, p.categoria " +
+                    "ORDER BY total_ventas DESC " +
+                    "LIMIT 18";
+
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+
+            // Añadir la etiqueta "Productos más vendidos del día" al GridPane.
+            Label label = new Label("Productos más vendidos del día");
+            gridPane.add(label, 0, 0, 3, 1);  // Colocar la etiqueta en la primera fila y abarcar cuatro columnas.
+
+            // Variables para posicionar los botones en el GridPane.
+            int row = 1;  // Empezar en la fila 1 porque la fila 0 tiene la etiqueta.
+            int col = 0;
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String nombre = rs.getString("nombre");
+                String categoria = rs.getString("categoria");
+                String iconoURL = IconManager.getIconURL(nombre, categoria);  // Obtener la URL del icono correspondiente.
+
+                // Crear botón con el icono y el nombre del plato.
+                Button btnPlato = createButtonWithIcon(iconoURL, nombre);
+                btnPlato.setOnAction(event -> {
+                    // Acción al hacer clic en el botón (puedes personalizar esta parte).
+                    System.out.println("Plato seleccionado: " + nombre);
+                });
+
+                // Agregar el botón al GridPane en la posición especificada.
+                gridPane.add(btnPlato, col, row);
+
+                // Actualizar la posición en el GridPane.
+                col++;
+                if (col == 5) {
+                    col = 0;
+                    row++;
+                }
+            }
+
+            // Cerrar la conexión con la base de datos.
+            rs.close();
+            stmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+   /* private void MostrarBotonesCaja() {
         LimpiarGridPane();
 
         // Crear la tabla de ordenes
@@ -334,66 +396,220 @@ public class MenuTablas extends Stage {
                 // Insertar el pedido en la base de datos
                 pedido.INSERTAR(); // Utilizamos el método INSERTAR para insertar el pedido en la base de datos
             }
-            // generarPDF(listaOrdenes, total);
+            float total = 0;
+            for (OrdenDAO orden : listaOrdenes) {
+                total += orden.getSubtotal();
+            }
 
-            // Crear una instancia de OrdenDAO
+            generarPDF(listaOrdenes, total);
+
             OrdenDAO ordenDAO = new OrdenDAO();
-
-            // Crear una nueva lista de órdenes vacía
             ObservableList<OrdenDAO> nuevaListaOrdenes = FXCollections.observableArrayList();
-
-            // Actualizar los items de la tabla de órdenes con la nueva lista vacía
             tblOrdenes.setItems(nuevaListaOrdenes);
 
-            // Mostrar un mensaje
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Pedido");
             alert.setHeaderText(null);
             alert.setContentText("Pedido realizado y almacenado en la tabla de pedidos");
             alert.showAndWait();
 
-            // Actualizar la tabla y el total
             actualizarTablaOrdenes(tblOrdenes);
         });
 
         // Actualizar el total
         actualizarTabla();
-    }
+    }*/
+   private void MostrarBotonesCaja() {
+       LimpiarGridPane();
 
-  /*  private void generarPDF(ObservableList<OrdenDAO> listaOrdenes, float total) {
-        Document document = new Document();
+       // Crear la tabla de órdenes
+       TableView<OrdenDAO> tblOrdenes = crearTablaOrdenes();
+
+       // Crear la tabla de platos
+       TableView<PlatosDAO> tblPlatos = crearTablaPlatos(tblOrdenes);
+
+       // Agregar las tablas al GridPane
+       gridPane.add(tblPlatos, 0, 0, 1, 2);
+       gridPane.add(tblOrdenes, 1, 0, 1, 2);
+
+       // Inicializar el Label del total
+       lblTotal = new Label();
+       lblMesaSeleccionada = new Label("Mesa seleccionada: ");
+       HBox hBoxTotalMesa = new HBox(10, lblTotal, lblMesaSeleccionada);
+       vBox.getChildren().add(hBoxTotalMesa);
+
+       // Inicializar el botón de pedido
+       btnPedido = new Button("Realizar pedido");
+       btnPedido.setStyle("-fx-font-size: 15px; " +
+               "-fx-font-weight: bold; " +
+               "-fx-text-fill: #ffffff; " +
+               "-fx-background-color: #4CAF50; " +
+               "-fx-padding: 10px; " +
+               "-fx-border-radius: 5px;");
+       vBox.getChildren().add(btnPedido);
+
+       // Agregar un manejador de eventos al botón
+       btnPedido.setOnAction(event -> {
+           // Obtener los datos de la tabla de órdenes
+           ObservableList<OrdenDAO> listaOrdenes = tblOrdenes.getItems();
+
+           // Insertar los datos de la tabla de órdenes en la tabla de pedidos
+           for (OrdenDAO orden : listaOrdenes) {
+               // Crear un objeto PedidoDAO con los datos de la orden
+               PedidoDAO pedido = new PedidoDAO();
+               pedido.setNombre(orden.getNombre());
+               pedido.setPrecio(orden.getPrecio());
+               pedido.setCantidad(orden.getCantidad());
+               pedido.setComentario(orden.getComentario());
+               pedido.setId_plato(orden.getId_plato());
+
+               // Insertar el pedido en la base de datos
+               pedido.INSERTAR(); // Utilizamos el método INSERTAR para insertar el pedido en la base de datos
+           }
+           float total = 0;
+           for (OrdenDAO orden : listaOrdenes) {
+               total += orden.getSubtotal();
+           }
+
+           generarPDF(listaOrdenes, total);
+
+           OrdenDAO ordenDAO = new OrdenDAO();
+           ObservableList<OrdenDAO> nuevaListaOrdenes = FXCollections.observableArrayList();
+           tblOrdenes.setItems(nuevaListaOrdenes);
+
+           Alert alert = new Alert(Alert.AlertType.INFORMATION);
+           alert.setTitle("Pedido");
+           alert.setHeaderText(null);
+           alert.setContentText("Pedido realizado y almacenado en la tabla de pedidos");
+           alert.showAndWait();
+
+           actualizarTablaOrdenes(tblOrdenes);
+       });
+
+       // Inicializar y agregar la sección de mesas
+       VBox mesasBox = new VBox();
+       Label lblMesas = new Label("Seleccionar Mesa");
+       mesasBox.getChildren().add(lblMesas);
+       gridPane.add(mesasBox, 2, 0, 1, 2);
+
+       // Obtener las mesas disponibles de la base de datos y añadir botones
+       try {
+           // Conexión con la base de datos
+           Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/taqueria2", "adminTacos2", "123");
+           Statement stmt = conn.createStatement();
+           ResultSet rs = stmt.executeQuery("SELECT * FROM mesas");
+
+           // Botones para mesas
+           while (rs.next()) {
+               int id = rs.getInt("id");
+               int numeroMesa = rs.getInt("numeroMesa");
+               String estado = rs.getString("estado");
+
+               // Crear botón de mesa
+               Button btnMesa = new Button("Mesa " + numeroMesa);
+               btnMesa.setOnAction(event -> {
+                   if (estado.equals("Libre")) {
+                       mesaSeleccionada = numeroMesa;
+                       lblMesaSeleccionada.setText("Mesa seleccionada: " + mesaSeleccionada);
+                   }
+               });
+
+               // Establecer el color del botón según el estado de la mesa
+               if (estado.equals("Ocupada")) {
+                   btnMesa.setStyle("-fx-background-color: red");
+                   btnMesa.setDisable(true); // Desactivar el botón si la mesa está ocupada
+               } else {
+                   btnMesa.setStyle("-fx-background-color: green");
+               }
+
+               mesasBox.getChildren().add(btnMesa);
+           }
+
+           // Cerrar la conexión con la base de datos
+           rs.close();
+           stmt.close();
+           conn.close();
+       } catch (SQLException e) {
+           e.printStackTrace();
+       }
+
+       // Actualizar el total
+       actualizarTabla();
+   }
+    public void generarPDF(ObservableList<OrdenDAO> listaOrdenes, float total) {
+        Document pdfDocument = new Document();
+        Page page = pdfDocument.getPages().add();
+        // Agregar el logo al PDF
+        String logoPath = "src/main/resources/images/taco.png";
+        com.aspose.pdf.Image image = new com.aspose.pdf.Image();
+        image.setFile(logoPath);
+        // Ajustar el tamaño de la imagen
+        image.setImageScale(0.3); // Cambia este valor según lo necesites para ajustar el tamaño
+        page.getParagraphs().add(image);
+
+        // Agregar título y encabezado
+        TextFragment title = new TextFragment("Resumen del Pedido");
+        title.getTextState().setFontSize(20);
+        title.getTextState().setFontStyle(FontStyles.Bold);
+        page.getParagraphs().add(title);
+        // Agregar mesa seleccionada
+        TextFragment mesaText = new TextFragment("Mesa seleccionada: " + mesaSeleccionada);
+        mesaText.getTextState().setFontSize(14);
+        mesaText.getTextState().setFontStyle(FontStyles.Bold);
+        page.getParagraphs().add(mesaText);
+
+        // Agregar tabla de órdenes
+        Table table = new Table();
+        table.setColumnWidths("50 100 50 50 100 100");
+
+        // Agregar fila de encabezado
+        Row headerRow = table.getRows().add();
+        headerRow.getCells().add("ID");
+        headerRow.getCells().add("Nombre");
+        headerRow.getCells().add("Precio");
+        headerRow.getCells().add("Cantidad");
+        headerRow.getCells().add("Subtotal");
+        headerRow.getCells().add("Comentario");
+// Agregar mensaje de agradecimiento
+        TextFragment mensajeAgradecimiento = new TextFragment("Gracias por su compra");
+        mensajeAgradecimiento.getTextState().setFontSize(14);
+        mensajeAgradecimiento.getTextState().setFontStyle(FontStyles.Bold);
+        mensajeAgradecimiento.setMargin(new MarginInfo(10, 0, 0, 0)); // Ajusta los márgenes si es necesario
+        page.getParagraphs().add(mensajeAgradecimiento);
+        // Agregar filas de datos
+        for (OrdenDAO orden : listaOrdenes) {
+            Row row = table.getRows().add();
+            row.getCells().add(String.valueOf(orden.getId()));
+            row.getCells().add(orden.getNombre());
+            row.getCells().add(String.valueOf(orden.getPrecio()));
+            row.getCells().add(String.valueOf(orden.getCantidad()));
+            row.getCells().add(String.valueOf(orden.getSubtotal()));
+            row.getCells().add(orden.getComentario());
+        }
+
+        // Estilizar la tabla
+        table.setBorder(new BorderInfo(BorderSide.All, 1f));
+        table.setDefaultCellPadding(new MarginInfo(4f, 4f, 4f, 4f));
+
+        // Agregar la tabla a la página
+        page.getParagraphs().add(table);
+
+        // Agregar total
+        TextFragment totalText = new TextFragment("Total a pagar: " + total);
+        totalText.getTextState().setFontSize(14);
+        totalText.getTextState().setFontStyle(FontStyles.Bold);
+        page.getParagraphs().add(totalText);
+
+        // Guardar el PDF
         try {
-            PdfWriter.getInstance(document, new FileOutputStream("Pedido.pdf"));
-            document.open();
-
-            Paragraph titulo = new Paragraph("Detalle del Pedido");
-            titulo.setAlignment(Element.ALIGN_CENTER);
-            document.add(titulo);
-            document.add(new Paragraph("\n"));
-
-            PdfPTable table = new PdfPTable(4); // 4 columnas
-            table.addCell("ID");
-            table.addCell("Nombre");
-            table.addCell("Precio");
-            table.addCell("Cantidad");
-
-            for (OrdenDAO orden : listaOrdenes) {
-                table.addCell(String.valueOf(orden.getId()));
-                table.addCell(orden.getNombre());
-                table.addCell(String.valueOf(orden.getPrecio()));
-                table.addCell(String.valueOf(orden.getCantidad()));
-            }
-
-            document.add(table);
-            document.add(new Paragraph("\n"));
-            document.add(new Paragraph("Total a pagar: " + total));
-
+            pdfDocument.save("Pedido.pdf");
+            System.out.println("PDF creado con éxito.");
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            document.close();
         }
-    }*/
+    }
+
+
 
     public void actualizarTabla() {
         OrdenDAO ordenDAO = new OrdenDAO();

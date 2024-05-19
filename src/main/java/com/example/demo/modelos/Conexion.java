@@ -5,9 +5,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 public class Conexion {
-    static private String DB = "taqueria";
-    static private String USER = "adminTacos";
-    static private String PWD = "1234";
+    static private String DB = "taqueria2";
+    static private String USER = "adminTacos2";
+    static private String PWD = "123";
     static public Connection connection;
    public static void crearConexion(){
         try {

@@ -24,7 +24,7 @@ public class HelloApplication extends Application {
 
     private MenuBar mnbPrincipal;
     private Menu menParcial1, menParcial2, menSalir;
-    private MenuItem mitCalculadora,mitMemorama,mitMemorama2,mitCuadroMagico, mitSalir,mitEmpleado;
+    private MenuItem mitCalculadora,mitMemorama,mitMemorama2,mitCuadroMagico, mitSalir,mitEmpleado,mitImpresion;
     private BorderPane bdpPanel;
     @Override
     public void start(Stage stage) throws IOException {
@@ -61,6 +61,9 @@ public class HelloApplication extends Application {
         mitEmpleado = new MenuItem("Empleado Taqueria");
         mitEmpleado.setOnAction(actionEvent -> new EmpleadoTaqueria());
 
+        mitImpresion = new MenuItem("Simulación de Impresión");
+        mitImpresion.setOnAction(actionEvent -> new simuladorimmprecion("Simulación de Impresión", "Archivo1", 10, "12:00:00"));
+
         menParcial1 = new Menu("Primer Parcial");
        // menParcial1.getItems().addAll(mitCalculadora);
         menParcial1 = new Menu("Primer Parcial");
@@ -69,7 +72,7 @@ public class HelloApplication extends Application {
         menParcial1.getItems().addAll(mitMemorama2);
         menParcial1.getItems().addAll(mitCuadroMagico);
         menParcial1.getItems().addAll(mitEmpleado);
-
+        menParcial1.getItems().addAll(mitImpresion);
 
         /* Menu segundo parcial */
         menParcial2 = new Menu("Segundo Parcial");

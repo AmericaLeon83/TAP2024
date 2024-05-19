@@ -20,8 +20,6 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.33</version>
         </dependency>
-
-
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
@@ -60,8 +58,25 @@
             <artifactId>kernel</artifactId>
             <version>7.1.13</version>
         </dependency>
-    </dependencies>
 
+
+        <dependency>
+            <groupId>com.aspose</groupId>
+            <artifactId>aspose-pdf</artifactId>
+            <version>21.9</version> <!-- o la versión que estés utilizando -->
+        </dependency>
+
+
+
+    </dependencies>
+    <repositories>
+        <repository>
+            <id>AsposeJavaAPI</id>
+            <name>Aspose Java API</name>
+            <url>https://repository.aspose.com/repo/</url>
+        </repository>
+
+    </repositories>
     <build>
         <plugins>
             <plugin>
